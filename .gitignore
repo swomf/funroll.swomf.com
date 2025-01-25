@@ -1,2 +1,5 @@
 # Generated website
 web_root
+
+# Compiled output
+*.o

@@ -1,5 +1,6 @@
 CONTENT_DIR = content
 WEB_ROOT = web_root
+MD2HTML = src/md2html/md2html
 MD_INPUT_FILES = $(shell find $(CONTENT_DIR) -name "*.md")
 HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD_INPUT_FILES))
 
@@ -7,16 +8,17 @@ HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD
 all: $(HTML_OUTPUT_FILES)
 
 # Build a website at web_root
-$(WEB_ROOT):
-	mkdir -p $(WEB_ROOT)
+$(MD2HTML):
+	$(MAKE) -C $(dir $(MD2HTML))
 
-$(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md | $(WEB_ROOT)
+$(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 	@mkdir -p $(dir $@)
-	md2html $< > $@
+	$(MD2HTML) $< > $@
 
-# Clean target to remove generated files
-clean:
+webclean:
 	rm -rf $(WEB_ROOT)
 
-.PHONY: all clean
+clean: | webclean
+	$(MAKE) -C $(dir $(MD2HTML)) clean
 
+.PHONY: all clean webclean
