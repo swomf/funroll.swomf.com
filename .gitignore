@@ -3,3 +3,7 @@ web_root
 
 # Compiled output
 *.o
+**/a.out
+
+# Tangled output
+gentoo_install
