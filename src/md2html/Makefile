@@ -13,4 +13,8 @@ $(PROG): $(OBJS)
 clean:
 	rm -f $(OBJS) $(PROG)
 
-.PHONY: all clean
+fmt:
+	# Just in case a dev runs `make fmt` in the current dir
+	clang-format -i *.c *.h
+
+.PHONY: all clean fmt

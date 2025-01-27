@@ -1,3 +1,8 @@
+#
+# website
+#
+
+WEBSITE_NAME = funroll
 CONTENT_DIR = content
 WEB_ROOT = web_root
 MD2HTML = src/md2html/md2html
@@ -12,6 +17,7 @@ $(MD2HTML):
 	$(MAKE) -C $(dir $(MD2HTML))
 
 $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
+	@echo "$(basename $(notdir $<)) | $(WEBSITE_NAME)"
 	@mkdir -p $(dir $@)
 	$(MD2HTML) $< > $@
 
@@ -21,4 +27,13 @@ webclean:
 clean: | webclean
 	$(MAKE) -C $(dir $(MD2HTML)) clean
 
-.PHONY: all clean webclean
+#
+# misc
+#
+fmt:
+	find . -name '*.c' \
+		-o -name '*.h' \
+		-o -name '*.cpp' \
+		-o -name '*.hpp' | xargs clang-format -i
+
+.PHONY: all clean webclean fmt
