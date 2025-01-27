@@ -16,10 +16,13 @@ all: $(HTML_OUTPUT_FILES)
 $(MD2HTML):
 	$(MAKE) -C $(dir $(MD2HTML))
 
-$(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
+$(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML) $(WEB_ROOT)/opengraph-preview.webp
 	@echo "$(basename $(notdir $<)) | $(WEBSITE_NAME)"
 	@mkdir -p $(dir $@)
 	$(MD2HTML) $< > $@
+
+$(WEB_ROOT)/opengraph-preview.webp:
+	cp -f assets/og/opengraph-preview.webp $(WEB_ROOT)/opengraph-preview.webp
 
 webclean:
 	rm -rf $(WEB_ROOT)
