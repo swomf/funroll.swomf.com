@@ -3,6 +3,7 @@
 #
 
 WEBSITE_NAME = funroll
+WEBSITE_URL = https://funroll.swomf.com
 CONTENT_DIR = content
 WEB_ROOT = web_root
 MD2HTML = src/md2html/md2html
@@ -17,9 +18,11 @@ $(MD2HTML):
 	$(MAKE) -C $(dir $(MD2HTML))
 
 $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML) $(WEB_ROOT)/opengraph-preview.webp
-	@echo "$(basename $(notdir $<)) | $(WEBSITE_NAME)"
 	@mkdir -p $(dir $@)
-	$(MD2HTML) $< > $@
+	$(MD2HTML) $< --full-html \
+		--html-title="$(basename $(notdir $<)) | $(WEBSITE_NAME)" \
+		--html-url="$(WEBSITE_URL)" \
+		> $@
 
 $(WEB_ROOT)/opengraph-preview.webp:
 	cp -f assets/og/opengraph-preview.webp $(WEB_ROOT)/opengraph-preview.webp

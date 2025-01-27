@@ -40,12 +40,16 @@ static unsigned renderer_flags =
 static unsigned renderer_flags = MD_HTML_FLAG_DEBUG;
 #endif
 static int want_fullhtml = 0;
-static int want_xhtml = 0;
 static int want_stat = 0;
 static int want_replay_fuzz = 0;
 
 static const char* html_title = NULL;
+static const char* html_desc = NULL;
+static const char* html_url = NULL;
 static const char* css_path = NULL;
+
+static const char* input_path = NULL;
+static const char* output_path = NULL;
 
 /*********************************
  ***  Simple grow-able buffer  ***
@@ -101,6 +105,38 @@ membuf_append(struct membuffer* buf, const char* data, MD_SIZE size)
     membuf_grow(buf, buf->size + buf->size / 2 + size);
   memcpy(buf->data + buf->size, data, size);
   buf->size += size;
+}
+
+/*******************
+ *** URL Helpers ***
+ *******************/
+
+/**
+ * Trim off index.html or .md from the end of a path.
+ *
+ * Call `free()` afterwards.
+ *
+ * EXAMPLES:
+ * * a/b/c/index.html -> a/b/c
+ * * a/b/c/index.md -> a/b/c/index
+ * * index.html -> (empty string)
+ */
+static char*
+trim_url_end(const char* filename)
+{
+  const char* dot = strrchr(filename, '.');
+  const char* slash = strrchr(filename, '/');
+
+  /* trim a/b/c.md into a/b/c */
+  if (slash != NULL && strcmp(slash, "index.html") == 0)
+    return strndup(filename, slash - filename);
+  /* trim a/b/index.html into a/b */
+  else if (dot != NULL && strcmp(dot, ".md") == 0)
+    return strndup(filename, dot - filename);
+  /* trim index.html into nothing */
+  else if (strcmp(filename, "index.html") == 0)
+    return strdup("");
+  return strdup(filename);
 }
 
 /**********************
@@ -185,32 +221,55 @@ process_file(const char* in_path, FILE* in, FILE* out)
 
   /* Write down the document in the HTML format. */
   if (want_fullhtml) {
-    if (want_xhtml) {
-      fprintf(out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-      fprintf(out,
-              "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" "
-              "\"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n");
-      fprintf(out, "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
-    } else {
-      fprintf(out, "<!DOCTYPE html>\n");
-      fprintf(out, "<html>\n");
-    }
+    char* trimmed_path = trim_url_end(input_path);
+
+    fprintf(out, "<!DOCTYPE html>\n");
+    fprintf(out, "<html>\n");
     fprintf(out, "<head>\n");
     fprintf(out, "<title>%s</title>\n", html_title ? html_title : "");
-    fprintf(out,
-            "<meta name=\"generator\" content=\"md2html\"%s>\n",
-            want_xhtml ? " /" : "");
+    /* Some metadata is a hardcoded default, since this
+     * parser is project-specific anyway
+     */
+
+    /* Generic metadata */
 #if !defined MD4C_USE_ASCII && !defined MD4C_USE_UTF16
-    fprintf(out, "<meta charset=\"UTF-8\"%s>\n", want_xhtml ? " /" : "");
+    fprintf(out, "<meta charset=\"UTF-8\">\n");
 #endif
+    fprintf(out,
+            "<meta name=\"viewport\" content=\"width=device-width, "
+            "initial-scale=1\">\n");
+    fprintf(out,
+            "<meta name=\"title\" content=\"%s\"\n>",
+            html_title ? html_title : "funroll");
+    fprintf(out,
+            "<meta name=\"description\" content=\"%s\">\n",
+            html_desc ? html_desc : "");
+    fprintf(out, "<meta name=\"generator\" content=\"md2html\">\n");
+
+    /* OpenGraph / Facebook */
+    fprintf(out, "<meta property=\"og:type\" content=\"website\">\n");
+    fprintf(out,
+            "<meta property=\"og:url\" content=\"%s/%s\">\n",
+            html_url ? html_url : "",
+            trimmed_path);
+    fprintf(out,
+            "<meta property=\"og:title\" content=\"%s\">\n",
+            html_title ? html_title : "funroll");
+    fprintf(out,
+            "<meta property=\"og:description\" content=\"%s\">\n",
+            html_desc ? html_desc : "a little bit of gentoo");
+    fprintf(out,
+            "<meta property=\"og:image\" content=\"%s/%s\">\n",
+            html_url ? html_url : "",
+            "opengraph-preview.webp");
+
     if (css_path != NULL) {
-      fprintf(out,
-              "<link rel=\"stylesheet\" href=\"%s\"%s>\n",
-              css_path,
-              want_xhtml ? " /" : "");
+      fprintf(out, "<link rel=\"stylesheet\" href=\"%s\">\n", css_path);
     }
     fprintf(out, "</head>\n");
     fprintf(out, "<body>\n");
+
+    free(trimmed_path);
   }
 
   fwrite(buf_out.data, 1, buf_out.size, out);
@@ -243,13 +302,14 @@ out:
 static const CMDLINE_OPTION cmdline_options[] = {
   { 'o', "output", 'o', CMDLINE_OPTFLAG_REQUIREDARG },
   { 'f', "full-html", 'f', 0 },
-  { 'x', "xhtml", 'x', 0 },
   { 's', "stat", 's', 0 },
   { 'h', "help", 'h', 0 },
   { 'v', "version", 'v', 0 },
 
   { 0, "html-title", '1', CMDLINE_OPTFLAG_REQUIREDARG },
   { 0, "html-css", '2', CMDLINE_OPTFLAG_REQUIREDARG },
+  { 0, "html-desc", '3', CMDLINE_OPTFLAG_REQUIREDARG },
+  { 0, "html-url", '4', CMDLINE_OPTFLAG_REQUIREDARG },
 
   { 0, "commonmark", 'c', 0 },
   { 0, "github", 'g', 0 },
@@ -290,7 +350,6 @@ usage(void)
     "General options:\n"
     "  -o  --output=FILE    Output file (default is standard output)\n"
     "  -f, --full-html      Generate full HTML document, including header\n"
-    "  -x, --xhtml          Generate XHTML instead of HTML\n"
     "  -s, --stat           Measure time of input parsing\n"
     "  -h, --help           Display this help and exit\n"
     "  -v, --version        Display version and exit\n"
@@ -339,7 +398,8 @@ usage(void)
     "      --fverbatim-entities\n"
     "                       Do not translate entities\n"
     "      --html-title=TITLE Sets the title of the document\n"
-    "      --html-css=URL   In full HTML or XHTML mode add a css link\n"
+    "      --html-desc=DESC Sets the description of the document\n"
+    "      --html-css=URL   In full HTML mode add a css link\n"
     "\n");
 }
 
@@ -348,9 +408,6 @@ version(void)
 {
   printf("%d.%d.%d\n", MD_VERSION_MAJOR, MD_VERSION_MINOR, MD_VERSION_RELEASE);
 }
-
-static const char* input_path = NULL;
-static const char* output_path = NULL;
 
 static int
 cmdline_callback(int opt, char const* value, void* data)
@@ -375,10 +432,6 @@ cmdline_callback(int opt, char const* value, void* data)
     case 'f':
       want_fullhtml = 1;
       break;
-    case 'x':
-      want_xhtml = 1;
-      renderer_flags |= MD_HTML_FLAG_XHTML;
-      break;
     case 's':
       want_stat = 1;
       break;
@@ -399,6 +452,12 @@ cmdline_callback(int opt, char const* value, void* data)
       break;
     case '2':
       css_path = value;
+      break;
+    case '3':
+      html_desc = value;
+      break;
+    case '4':
+      html_url = value;
       break;
 
     case 'c':
