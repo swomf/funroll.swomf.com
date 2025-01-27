@@ -264,6 +264,8 @@ process_file(const char* in_path, FILE* in, FILE* out)
             "opengraph-preview.webp");
 
     if (css_path != NULL) {
+      /* my css is dark-first anyway */
+      fprintf(out, "<meta name=\"darkreader-lock\">\n");
       fprintf(out, "<link rel=\"stylesheet\" href=\"%s\">\n", css_path);
     }
     fprintf(out, "</head>\n");
