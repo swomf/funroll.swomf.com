@@ -65,6 +65,8 @@ main(int argc, char** argv)
          "Error: Markdown file expected. (\"%s\" does not end in .md)",
          input_markdown_filename);
 
+  printf("\033[1;32m     Tangling\033[0m %s\n", input_markdown_filename);
+
   /* Multiple code blocks can reference the same conf file; then, we append.
    * However, this means that conf files should be erased anew when generation
    * is performed multiple times, i.e.

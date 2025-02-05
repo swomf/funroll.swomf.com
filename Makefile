@@ -1,9 +1,9 @@
 # Default target
-all: web
+all: web tangle
 
-#
-# website
-#
+###############
+### website ###
+###############
 
 WEBSITE_NAME = funroll
 WEBSITE_URL = https://funroll.swomf.com
@@ -45,16 +45,34 @@ $(WEB_ROOT)/sitemap.xml: $(WEB_ROOT) $(HTML_OUTPUT_FILES)
 webclean:
 	rm -rf $(WEB_ROOT)
 
-clean: | webclean
-	$(MAKE) -C $(dir $(MD2HTML)) clean
+######################
+### gentoo_install ###
+######################
 
-#
-# misc
-#
+TANGLE = src/tangle/tangle
+
+tangle: $(TANGLE) gentoo_install
+
+$(TANGLE):
+	$(MAKE) -C $(dir $(TANGLE))
+
+# TODO Should the -j argument be respected?
+gentoo_install: $(shell find content -name '*.md') $(TANGLE)
+	rm -rf gentoo_install
+	find content -name '*.md' | xargs -n1 -P $(shell nproc) $(TANGLE)
+
+############
+### misc ###
+############
+
 fmt:
 	find . -name '*.c' \
 		-o -name '*.h' \
 		-o -name '*.cpp' \
 		-o -name '*.hpp' | xargs clang-format -i
+
+clean: webclean
+	$(MAKE) -C $(dir $(MD2HTML)) clean
+	$(MAKE) -C $(dir $(TANGLE)) clean
 
 .PHONY: all web clean webclean fmt
