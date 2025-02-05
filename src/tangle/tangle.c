@@ -4,9 +4,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
-/* There's _no way_ we'll define a Gentoo conf path any larger within our
- * Markdown files */
-#define MAX_LINE_LENGTH 256
+/* Hopefully a USE flag list doesn't get any longer. */
+#define MAX_LINE_LENGTH 512
 
 /* Dir where we extract all of our docs' code blocks into conf files */
 #define TANGLE_DIR "gentoo_install"
@@ -21,10 +20,12 @@
 #endif
 
 #define expect(a, ...)                                                         \
-  if (!(a)) {                                                                  \
-    fprintf(stderr, __VA_ARGS__);                                              \
-    exit(1);                                                                   \
-  }
+  do {                                                                         \
+    if (!(a)) {                                                                \
+      fprintf(stderr, __VA_ARGS__);                                            \
+      exit(1);                                                                 \
+    }                                                                          \
+  } while (0)
 
 int
 prepare_parent_dir_for(const char* path)
