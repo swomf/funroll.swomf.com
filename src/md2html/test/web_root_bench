@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Possible flags:
+#   CFLAGS='user cflags', such as -fPIC
+#   DEBUG=1
+
+SCRIPT_DIR="$(readlink -f "$(dirname "$(readlink -f "$0")")"/../../..)"
+
+cd "$SCRIPT_DIR" || exit 1
+
+# Get sample average for 10 builds in each row.
+# Note: change top-level Makefile's MD2HTML command to include --stat.
+
+for i in 0 1 2 3 fast s z; do
+  if [[ "$i" == 0 && -n "$DEBUG" ]]; then
+    printf "\033[33;1mDEBUG: Example of build step:\n\033[0m\t"
+    make -j20 -B -C src/md2html CFLAGS="-O$i $CFLAGS"
+    printf "\033[33;1m=============================\n\033[0m\t"
+  else
+    printf "\033[36;1mBuilding\033[0m\t"
+    make -j20 -B -C src/md2html CFLAGS="-O$i $CFLAGS" &>/dev/null
+  fi
+  printf "\rwith %s\t" O$i:
+  for _ in {0..25}; do
+    make webclean
+    make web 2>&1 | grep -Eo '[0-9]\.[0-9]+' | paste -sd+ - | bc
+  done | awk '{sum+=$1} END {print sum/NR}'
+done

@@ -28,6 +28,7 @@ $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 		--html-title="$(basename $(notdir $<)) | $(WEBSITE_NAME)" \
 		--html-css="/monospace.css" \
 		--html-url="$(WEBSITE_URL)" \
+		--stat \
 		> $@
 
 $(WEB_ROOT)/opengraph-preview.webp: $(WEB_ROOT)

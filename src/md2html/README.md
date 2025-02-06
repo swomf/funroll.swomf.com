@@ -13,3 +13,8 @@ at tag `release-0.5.2`.
     * This directory's [.clangd](.clangd) (for clangd LSP, in e.g. neovim)
   * Follow upstream build flags (their CMakeLists.txt)
   * Run `make fmt` before starting to merge any dep upgrades
+* Benchmarking
+  * `./test/web_root_bench`.
+    * Note: the root Makefile must use the `--stat` option when running md2html
+  * On a sample of several small .md files and one large .md file,
+  `-O1` was consistently 40% faster than `-O0`, and always faster than `-O3` (upstream's cmake default)
