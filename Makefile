@@ -1,6 +1,8 @@
 # Default target
 all: web tangle
 
+include nonrec.mk
+
 ###############
 ### website ###
 ###############
@@ -9,22 +11,19 @@ WEBSITE_NAME = funroll
 WEBSITE_URL = https://funroll.swomf.com
 CONTENT_DIR = content
 WEB_ROOT = web_root
-MD2HTML = src/md2html/md2html
+include src/md2html/md2html.mk # for MD2HTML
 MD_INPUT_FILES = $(shell find $(CONTENT_DIR) -name "*.md")
 HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD_INPUT_FILES))
 
 web: $(HTML_OUTPUT_FILES) $(WEB_ROOT)/sitemap.xml
 
 # Build a website at web_root
-$(MD2HTML):
-	$(MAKE) -C $(dir $(MD2HTML))
-
 $(WEB_ROOT): assets/og/opengraph-preview.webp src/css/monospace.css
 	mkdir -p $(WEB_ROOT)
 	cp $^ $@
 
 $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
-	@mkdir -p $(dir $@)
+	@mkdir -p $(@D)
 	$(MD2HTML) $< --full-html \
 		--html-title="$(basename $(notdir $<)) | $(WEBSITE_NAME)" \
 		--html-css="/monospace.css" \
@@ -39,36 +38,26 @@ $(WEB_ROOT)/sitemap.xml: $(WEB_ROOT) $(HTML_OUTPUT_FILES)
 	echo "</urlset>" >> $@
 
 webclean:
-	rm -rf $(WEB_ROOT)
+	$(RM) -r $(WEB_ROOT)
 
 ######################
 ### gentoo_install ###
 ######################
 
-TANGLE = src/tangle/tangle
+tangle: gentoo_install
+include src/tangle/tangle.mk # for TANGLE
 
-tangle: $(TANGLE) gentoo_install
-
-$(TANGLE):
-	$(MAKE) -C $(dir $(TANGLE))
-
-# TODO Should the -j argument be respected?
-gentoo_install: $(shell find content -name '*.md') $(TANGLE)
-	rm -rf gentoo_install
-	find content -name '*.md' | xargs -n1 -P $(shell nproc) $(TANGLE)
+# TODO Should multithreading use -j, use nproc, or not be used at all?
+gentoo_install: $(MD_INPUT_FILES) $(TANGLE)
+	$(RM) -r gentoo_install
+	echo $(MD_INPUT_FILES) | xargs -n1 -P $(shell nproc) $(TANGLE)
 
 ############
 ### misc ###
 ############
 
-fmt:
-	find . -name '*.c' \
-		-o -name '*.h' \
-		-o -name '*.cpp' \
-		-o -name '*.hpp' | xargs clang-format -i
+clean:: webclean
+	$(RM) $(MD2HTML) $(TANGLE)
+	$(RM) -r gentoo_install
 
-clean: webclean
-	$(MAKE) -C $(dir $(MD2HTML)) clean
-	$(MAKE) -C $(dir $(TANGLE)) clean
-
-.PHONY: all web clean webclean fmt
+.PHONY: all web webclean
