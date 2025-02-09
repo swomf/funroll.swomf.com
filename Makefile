@@ -13,14 +13,15 @@ MD2HTML = src/md2html/md2html
 MD_INPUT_FILES = $(shell find $(CONTENT_DIR) -name "*.md")
 HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD_INPUT_FILES))
 
-web: $(HTML_OUTPUT_FILES) $(WEB_ROOT)/opengraph-preview.webp $(WEB_ROOT)/sitemap.xml $(WEB_ROOT)/monospace.css
+web: $(HTML_OUTPUT_FILES) $(WEB_ROOT)/sitemap.xml
 
 # Build a website at web_root
 $(MD2HTML):
 	$(MAKE) -C $(dir $(MD2HTML))
 
-$(WEB_ROOT):
+$(WEB_ROOT): assets/og/opengraph-preview.webp src/css/monospace.css
 	mkdir -p $(WEB_ROOT)
+	cp $^ $@
 
 $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 	@mkdir -p $(dir $@)
@@ -30,12 +31,6 @@ $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 		--html-url="$(WEBSITE_URL)" \
 		--stat \
 		> $@
-
-$(WEB_ROOT)/opengraph-preview.webp: $(WEB_ROOT)
-	cp -f assets/og/opengraph-preview.webp $(WEB_ROOT)/opengraph-preview.webp
-
-$(WEB_ROOT)/monospace.css: $(WEB_ROOT)
-	cp -f src/css/monospace.css $(WEB_ROOT)/monospace.css
 
 $(WEB_ROOT)/sitemap.xml: $(WEB_ROOT) $(HTML_OUTPUT_FILES)
 	echo "<urlset>" > $@
