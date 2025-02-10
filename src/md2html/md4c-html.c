@@ -3,6 +3,7 @@
  * (http://github.com/mity/md4c)
  *
  * Copyright (c) 2016-2024 Martin Mitáš
+ * Copyright (c) 2025 swomf
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -286,6 +287,35 @@ render_attribute(MD_HTML* r,
   }
 }
 
+/* swomf customization for printing things like path=abc as abc */
+static void
+render_equalless(MD_HTML* r,
+                 const MD_ATTRIBUTE* attr,
+                 void (*fn_append)(MD_HTML*, const MD_CHAR*, MD_SIZE))
+{
+  int i;
+
+  for (i = 0; attr->substr_offsets[i] < attr->size; i++) {
+    MD_TEXTTYPE type = attr->substr_types[i];
+    MD_OFFSET off = attr->substr_offsets[i];
+    /* 6 is the size of the path= tag. TODO make cleaner */
+    MD_SIZE size = attr->substr_offsets[i + 1] - off - 6;
+    const MD_CHAR* text = attr->text + off + 6;
+
+    switch (type) {
+      case MD_TEXT_NULLCHAR:
+        render_utf8_codepoint(r, 0x0000, render_verbatim);
+        break;
+      case MD_TEXT_ENTITY:
+        render_entity(r, text, size, fn_append);
+        break;
+      default:
+        fn_append(r, text, size);
+        break;
+    }
+  }
+}
+
 static void
 render_open_ol_block(MD_HTML* r, const MD_BLOCK_OL_DETAIL* det)
 {
@@ -319,13 +349,20 @@ render_open_li_block(MD_HTML* r, const MD_BLOCK_LI_DETAIL* det)
 static void
 render_open_code_block(MD_HTML* r, const MD_BLOCK_CODE_DETAIL* det)
 {
-  RENDER_VERBATIM(r, "<pre><code");
-
-  /* If known, output the HTML 5 attribute class="language-LANGNAME". */
+  RENDER_VERBATIM(r, "<pre");
   if (det->lang.text != NULL) {
-    RENDER_VERBATIM(r, " class=\"language-");
+    /* Assume that lang.text is sufficient for info.text's existence. */
+    if (det->info.text != NULL) {
+      /* NOTE: The classes filehead and filebody are defined in monospace.css */
+      RENDER_VERBATIM(r, " class=\"filehead\">");
+      render_equalless(r, &det->info, render_html_escaped);
+      RENDER_VERBATIM(r, "</pre><pre class=\"filebody\"");
+    }
+    /* If known, output the HTML 5 attribute class="language-LANGNAME". */
+    RENDER_VERBATIM(r, "><code class=\"language-");
     render_attribute(r, &det->lang, render_html_escaped);
-    RENDER_VERBATIM(r, "\"");
+    RENDER_VERBATIM(r, "\" ");
+    render_attribute(r, &det->info, render_html_escaped);
   }
 
   RENDER_VERBATIM(r, ">");

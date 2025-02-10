@@ -18,3 +18,10 @@ at tag `release-0.5.2`.
     * Note: the root Makefile must use the `--stat` option when running md2html
   * On a sample of several small .md files and one large .md file,
   `-O1` was consistently 40% faster than `-O0`, and always faster than `-O3` (upstream's cmake default)
+* Differences from upstream
+  * Added metadata (e.g. [opengraph](https://ogp.me/)) to `md2html.c`'s
+  html output. See the section above its only `fwrite`
+    * Remove XHTML support _de facto_. Some residual minutiae e.g. pertinent bitmask flags remain
+  * Added filename tags to fenced code blocks that specify a `path=` after its lang.
+    * Patched `md4c-html.c`, `md4c.c`, `src/assets/monospace.css`.
+    * Upstream leaves the pertinent info tag [unused](https://md4c.readthedocs.io/en/stable/#md4c.details.Code)
