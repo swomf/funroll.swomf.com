@@ -14,19 +14,20 @@ WEB_ROOT = web_root
 include src/md2html/md2html.mk # for MD2HTML
 MD_INPUT_FILES = $(shell find $(CONTENT_DIR) -name "*.md")
 HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD_INPUT_FILES))
-HTML_RAWCOPY_FILES = $(patsubst $(CONTENT_DIR)/%/index.html,$(WEB_ROOT)/%/index.html,$(MD_INPUT_FILES))
-# Copy files to top-level web_root directory
-TOP_COPY_INPUT_FILES = assets/og/opengraph-preview.webp src/css/monospace.css content/index.html
-TOP_COPY_OUTPUT_FILES = $(addprefix $(WEB_ROOT)/, $(notdir $(TOP_COPY_INPUT_FILES)))
 
 # Build a website at web_root
-web: $(HTML_OUTPUT_FILES) $(TOP_COPY_OUTPUT_FILES) $(WEB_ROOT)/sitemap.xml
+web: $(HTML_OUTPUT_FILES) $(TOP_COPY_OUTPUT_FILES) \
+	$(WEB_ROOT)/sitemap.xml $(WEB_ROOT)/opengraph-preview.webp $(WEB_ROOT)/monospace.css $(WEB_ROOT)/index.html
 
-$(TOP_COPY_OUTPUT_FILES): $(TOP_COPY_INPUT_FILES) | $(WEB_ROOT)
-	cp $< $@
-
-$(WEB_ROOT): 
+# A bit repetitive but simple
+$(WEB_ROOT):
 	mkdir -p $@
+$(WEB_ROOT)/opengraph-preview.webp: assets/og/opengraph-preview.webp | $(WEB_ROOT)
+	cp -f $< $@
+$(WEB_ROOT)/monospace.css: src/css/monospace.css | $(WEB_ROOT)
+	cp -f $< $@
+$(WEB_ROOT)/index.html: $(CONTENT_DIR)/index.html | $(WEB_ROOT)
+	cp -f $< $@
 
 $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 	@mkdir -p $(@D)
