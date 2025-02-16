@@ -298,7 +298,7 @@ render_equalless(MD_HTML* r,
   for (i = 0; attr->substr_offsets[i] < attr->size; i++) {
     MD_TEXTTYPE type = attr->substr_types[i];
     MD_OFFSET off = attr->substr_offsets[i];
-    /* 6 is the size of the path= tag. TODO make cleaner */
+    /* 6 is the size of the path= tag. TODO: make cleaner */
     MD_SIZE size = attr->substr_offsets[i + 1] - off - 6;
     const MD_CHAR* text = attr->text + off + 6;
 
@@ -314,6 +314,34 @@ render_equalless(MD_HTML* r,
         break;
     }
   }
+}
+
+/* swomf customization: (absolute) outlinks use target="_blank"
+ *
+ * returns zero if absolute link
+ *
+ * FIXME: not sure if this works in UTF16 or with nonzero substr_offset. see
+ * md4c.c -> md_ascii_eq
+ */
+short
+is_absolute_link(const MD_ATTRIBUTE* attr)
+{
+  int i, j = 0, hsize = 7;
+  char s[8];
+
+  for (i = 0; attr->substr_offsets[i] < attr->size; i++) {
+    MD_OFFSET off = attr->substr_offsets[i];
+    MD_SIZE size = attr->substr_offsets[i + 1] - off;
+    const MD_CHAR* text = attr->text + off;
+    do {
+      s[j] = text[j];
+    } while (j++ < hsize);
+    if (memcmp(s, "https://", 7) == 0 || memcmp(s, "http://", 6) == 0) {
+      return 0;
+    }
+  }
+
+  return 1;
 }
 
 static void
@@ -351,7 +379,7 @@ render_open_code_block(MD_HTML* r, const MD_BLOCK_CODE_DETAIL* det)
 {
   RENDER_VERBATIM(r, "<pre");
   if (det->lang.text != NULL) {
-    /* Assume that lang.text is sufficient for info.text's existence. */
+    /* Assume that lang.text is necessary for info.text's existence. */
     if (det->info.text != NULL) {
       /* NOTE: The classes filehead and filebody are defined in monospace.css */
       RENDER_VERBATIM(r, " class=\"filehead\">");
@@ -397,6 +425,13 @@ render_open_a_span(MD_HTML* r, const MD_SPAN_A_DETAIL* det)
 {
   RENDER_VERBATIM(r, "<a href=\"");
   render_attribute(r, &det->href, render_url_escaped);
+
+  /* swomf customization: https:// outlinks are _target
+   * TODO: it would be more ergonomic if this was kept at
+   * the DETAIL level, as an `int is_absolute_link` */
+  if (is_absolute_link(&det->href) == 0) {
+    RENDER_VERBATIM(r, "\" target=\"_blank");
+  }
 
   if (det->title.text != NULL) {
     RENDER_VERBATIM(r, "\" title=\"");
