@@ -14,25 +14,23 @@ WEB_ROOT = web_root
 include src/md2html/md2html.mk # for MD2HTML
 MD_INPUT_FILES = $(shell find $(CONTENT_DIR) -name "*.md")
 HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD_INPUT_FILES))
+COPY_INPUT_FILES = assets/butterfly/butterfly-with-text.webp src/css/monospace.css \
+									 $(CONTENT_DIR)/index.html $(CONTENT_DIR)/typing-funroll.js \
+									 assets/butterfly/butterfly.svg
+# Unfortunately this is the cleanest way to make a non-redundant copy rule
+COPY_OUTPUT_FILES =
+define CREATE_COPY_RULE
+$$(WEB_ROOT)/$$(notdir $(1)): $(1)
+	cp -uf $$^ $$@
+COPY_OUTPUT_FILES += $$(WEB_ROOT)/$$(notdir $(1))
+endef
+$(foreach file,$(COPY_INPUT_FILES),$(eval $(call CREATE_COPY_RULE,$(file))))
 
 # Build a website at web_root
-web: $(HTML_OUTPUT_FILES) $(TOP_COPY_OUTPUT_FILES) \
-	$(WEB_ROOT)/sitemap.xml $(WEB_ROOT)/opengraph-preview.webp $(WEB_ROOT)/monospace.css \
-	$(WEB_ROOT)/index.html $(WEB_ROOT)/typing-funroll.js $(WEB_ROOT)/butterfly.svg
+web: $(HTML_OUTPUT_FILES) $(TOP_COPY_OUTPUT_FILES) $(WEB_ROOT) $(WEB_ROOT)/sitemap.xml $(COPY_OUTPUT_FILES)
 
-# A bit repetitive but simple
 $(WEB_ROOT):
-	mkdir -p $@
-$(WEB_ROOT)/opengraph-preview.webp: assets/butterfly/butterfly-with-text.webp | $(WEB_ROOT)
-	cp -f $< $@
-$(WEB_ROOT)/monospace.css: src/css/monospace.css | $(WEB_ROOT)
-	cp -f $< $@
-$(WEB_ROOT)/index.html: $(CONTENT_DIR)/index.html | $(WEB_ROOT)
-	cp -f $< $@
-$(WEB_ROOT)/typing-funroll.js: $(CONTENT_DIR)/typing-funroll.js | $(WEB_ROOT)
-	cp -f $< $@
-$(WEB_ROOT)/butterfly.svg: assets/butterfly/butterfly.svg | $(WEB_ROOT)
-	cp -f $< $@
+	[ -d $@ ] || mkdir $@
 
 $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 	@mkdir -p $(@D)

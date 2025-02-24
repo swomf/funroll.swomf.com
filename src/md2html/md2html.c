@@ -261,7 +261,7 @@ process_file(const char* in_path, FILE* in, FILE* out)
     fprintf(out,
             "<meta property=\"og:image\" content=\"%s/%s\">\n",
             html_url ? html_url : "",
-            "opengraph-preview.webp");
+            "butterfly-with-text.webp");
 
     if (css_path != NULL) {
       /* my css is dark-first anyway */
