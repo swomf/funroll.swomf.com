@@ -41,7 +41,7 @@ $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 		--stat \
 		> $@
 
-$(WEB_ROOT)/sitemap.xml: $(HTML_OUTPUT_FILES) | $(WEB_ROOT)
+$(WEB_ROOT)/sitemap.xml: $(HTML_OUTPUT_FILES) $(COPY_OUTPUT_FILES) | $(WEB_ROOT)
 	echo "<urlset>" > $@
 	find $(WEB_ROOT) | awk -v url=$(WEBSITE_URL) -v webrootdir=$(WEB_ROOT) \
 		'/index\.html$$/{sub(/index\.html$$/, ""); sub( webrootdir, ""); print "<url><loc>" url $$0 "</loc></url>"}' >> $@
