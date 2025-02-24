@@ -35,6 +35,8 @@ See the graph above :).
 
 ## Usage
 
+Run `make help` for more.
+
 This is not ready for use. Here is our todo list:
 
 - [ ] Set up md2html Markdown-to-web step
@@ -55,8 +57,8 @@ This is not ready for use. Here is our todo list:
   - [x] Write to files as specified in the path=.
     - [x] Add unit tests
     - [ ] Flesh out unit tests
-- [ ] Set up sync step
-  - [ ] Show diffs
+- [ ] Set up sync step (Should this even keep track of state?)
+  - [x] Show diffs
   - [ ] Help user resolve large transactions (e.g. when a package adds a savedconfig, outside of funroll control)
   - [ ] Deal with (delete?) system conf files when their respective code blocks are removed from the user's knowledge base
 - [ ] Create wiki to help Gentoo users hack this to their needs

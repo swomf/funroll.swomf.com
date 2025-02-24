@@ -1,5 +1,5 @@
 # Default target
-all: web tangle
+all: tangle
 
 include nonrec.mk
 
@@ -51,20 +51,68 @@ webclean:
 ### gentoo_install ###
 ######################
 
+# the files in gentoo_install to copy into /
+
 tangle: gentoo_install
 include src/tangle/tangle.mk # for TANGLE
 
-# TODO Should multithreading use -j, use nproc, or not be used at all?
+# TODO: Should multithreading use -j, use nproc, or not be used at all?
+# NOTE: src/tangle/tangle is responsible for running mkdir -p here.
+#       therefore EVERYTHING is rebuilt anyway
 gentoo_install: $(MD_INPUT_FILES) $(TANGLE)
-	$(RM) -r gentoo_install
+	$(RM) -r $@
 	echo $(MD_INPUT_FILES) | xargs -n1 -P $(shell nproc) $(TANGLE)
+
+# If the user isn't root, only show a dry run.
+ifneq ($(shell id -u), 0)
+INSTALL_CMD := echo dryrun: install
+else
+INSTALL_CMD := install
+endif
+
+# FIXME: This is a glorious hack.
+#        In `make sync`, $(PORTAGE_OUTPUT_FILES) *cannot* be defined
+#        until the gentoo_install directory exists.
+#        Therefore, in order to have Makefile attempt redefinition of
+#        $(PORTAGE_OUTPUT_FILES) after the gentoo_install target is reached,
+#        we have Makefile enter *its own directory* to run the second step of sync.
+#        NORMALLY, we are able to redefine variables,
+#           https://stackoverflow.com/questions/2711963/change-makefile-variable-value-inside-the-target-body
+#        but, if the variable is expressed as a dependency, it won't be reevaluated.
+PORTAGE_OUTPUT_FILES = $(patsubst gentoo_install/%,/%,$(shell find gentoo_install -type f 2>/dev/null))
+sync: gentoo_install
+	$(MAKE) _sync2_INTERNAL
+	@echo Configuration synced.
+_sync2_INTERNAL: $(PORTAGE_OUTPUT_FILES)
+
+diff: gentoo_install
+	./src/scripts/diff
+
+# Relies on $(PORTAGE_OUTPUT_FILES) to be correctly defined
+/%: gentoo_install/%
+	@printf "\033[1;32m      Syncing\033[0m %s \033[1;32m->\033[0m %s" "$<" "$@"
+	@if [ -f "$@" ]; then printf "\n" && diff --color=always "$@" "$<" || true; else printf "\033[1;32m (new)\033[0m\n"; fi
+	@case "$@" in \
+		*.sh | *.start) \
+	    $(INSTALL_CMD) -Dm755 "$<" "$@" \
+			;; \
+		*) \
+	    $(INSTALL_CMD) -Dm644 "$<" "$@" \
+			;; \
+	esac
 
 ############
 ### misc ###
 ############
 
+# use 2 colons so it can be additively redefined in any included .mk files
 clean:: webclean
 	$(RM) $(MD2HTML) $(TANGLE)
 	$(RM) -r gentoo_install
 
-.PHONY: all web webclean
+help:
+	@echo Run `make` and `make sync` to tangle your Markdown files and install.
+	@echo Run `make web` to turn your Markdown files into HTML.
+	@echo Run `make clean` to clean everything, or `make webclean` to only clean the web_root directory (since `make web` is not stateless)
+
+.PHONY: all web webclean tangle diff sync _sync2_INTERNAL help

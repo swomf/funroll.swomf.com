@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+printf "\n=== Diffs inside of /etc/portage ===\n\n"
+diff /etc/portage gentoo_install/etc/portage --recursive --color=always
+printf "\n=== Diffs outside of /etc/portage: ===\n\n"
+find gentoo_install -path 'gentoo_install/etc/portage' -prune -o -type f -print | sed 's|^gentoo_install/||' | while read -r file; do
+  if [ -f "/etc/${file}" ]; then
+    echo "Comparing /etc/${file} with gentoo_install/${file}"
+    diff -u "/etc/${file}" "gentoo_install/${file}"
+  else
+    echo "/etc/${file} does not exist."
+  fi
+done
