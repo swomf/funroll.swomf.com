@@ -16,6 +16,9 @@ function typeText(textIndex) {
   console.log(`line 16 ${text} ${index}`);
 
   const typingInterval = setInterval(() => {
+    console.log(output.scrollLeft);
+    output.scrollLeft = output.scrollWidth;
+    console.log(output.scrollLeft);
     if (index < text.length) {
       output.textContent += text.charAt(index);
       index++;
