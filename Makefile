@@ -17,16 +17,21 @@ HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD
 
 # Build a website at web_root
 web: $(HTML_OUTPUT_FILES) $(TOP_COPY_OUTPUT_FILES) \
-	$(WEB_ROOT)/sitemap.xml $(WEB_ROOT)/opengraph-preview.webp $(WEB_ROOT)/monospace.css $(WEB_ROOT)/index.html
+	$(WEB_ROOT)/sitemap.xml $(WEB_ROOT)/opengraph-preview.webp $(WEB_ROOT)/monospace.css \
+	$(WEB_ROOT)/index.html $(WEB_ROOT)/typing-funroll.js $(WEB_ROOT)/butterfly.svg
 
 # A bit repetitive but simple
 $(WEB_ROOT):
 	mkdir -p $@
-$(WEB_ROOT)/opengraph-preview.webp: assets/og/opengraph-preview.webp | $(WEB_ROOT)
+$(WEB_ROOT)/opengraph-preview.webp: assets/butterfly/butterfly-with-text.webp | $(WEB_ROOT)
 	cp -f $< $@
 $(WEB_ROOT)/monospace.css: src/css/monospace.css | $(WEB_ROOT)
 	cp -f $< $@
 $(WEB_ROOT)/index.html: $(CONTENT_DIR)/index.html | $(WEB_ROOT)
+	cp -f $< $@
+$(WEB_ROOT)/typing-funroll.js: $(CONTENT_DIR)/typing-funroll.js | $(WEB_ROOT)
+	cp -f $< $@
+$(WEB_ROOT)/butterfly.svg: assets/butterfly/butterfly.svg | $(WEB_ROOT)
 	cp -f $< $@
 
 $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
