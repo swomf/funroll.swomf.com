@@ -1,0 +1,511 @@
+<style>
+.nowrap {
+  white-space: nowrap;
+}
+.m-0 {
+  margin: 0;
+}
+.ml-3 {
+  margin-left: 3ch;
+}
+.bright {
+  background-color: #FFFFFF;
+  color: #000000;
+  border-radius: 0.4ch;
+  padding: 0 0.5ch;
+}
+.yellow {
+  color: #edfc46;
+}
+.red {
+  color: #fc4646;
+}
+.blue {
+  color: #96ecf7;
+}
+.ol-override {
+  counter-reset: override;
+}
+.ol-li-override:before {
+  list-style-type: none;
+  content: counter(override) ". ";
+  counter-increment: override;
+  font-weight: var(--font-weight-medium);
+}
+</style>
+
+# booting
+
+I have a mildly complicated boot setup
+that loops around to being simple.
+
+<figure>
+<pre>
+                                sbctl secure boot
+┌──────────────┐  ┌<em class="yellow">/dev/sda1─►/efi</em>───────────────┐ ╭       ╮
+│              │  │ 2. Unified Kernel Image      │ │made   │
+│1. Just simple│  │ (no intermediate bootloader) │ │with   │
+│laptop UEFI   ├─►│┌───────┐  ┌─────────────────┐│ │dracut.│
+│(OEM default!)│  ││efistub├─►│tweaked initramfs││ ╰       ╯
+│              │  │└───────┘  └─────────────────┘├─┐
+└──────────────┘  └──────────────────────────────┘ │ 
+                                                   │ password.
+┌<em class="red">/dev/sda2─►/dev/mapper/cryptroot</em>───────────────┐  │ mounts then
+│ 3. LUKS2 encryption (argon2id algorithm)      │  │ switches
+│┌<em class="blue">/dev/mapper/cryptroot─►various</em>───────────────┐│  │ root
+││ 4. BTRFS partition (flat subvolume layout)  ├╯  │
+││Subvolume         Mount location             │◄──┘
+││@           ────► /                          ├╮
+││@home       ────► /home                      ││
+││@var_log    ────► /var/log                   ││
+││@snapshots  ────► /.snapshots                ││
+│└─────────────────────────────────────────────┘│
+└───────────────────────────────────────────────┘
+</pre>
+</figure>
+
+There was a gotcha I had to write a Dracut module for, but this setup
+is otherwise a typical product of dodging an intermediate bootloader.
+
+Below, I'll discuss each step of the startup diagram in order
+(as opposed to the chronologically-ordered setup commands).
+
+# Boot process
+
+## 1. UEFI
+
+My ASUS laptop's
+[UEFI firmware ⇗](https://wiki.archlinux.org/title/Arch_boot_process#UEFI)
+happens to be standards-compliant. Hence, the UEFI can boot
+straight into the kernel via efistub, as long as the UEFI
+keeps a boot entry for it (discussed in §2).
+
+<div class="ml-3">
+  <span class="bright">Note:</span>
+  The Gentoo wiki
+  <a target="_blank" href="https://wiki.gentoo.org/wiki/Unified_kernel_image#Automated_EFI_stub_booting)">warns ⇗</a>
+  that not all motherboards are fully UEFI-compliant. Too bad: they'll need to
+  chainload an intermediate bootloader (GRUB2, systemd-boot, etc.) instead.
+</div>
+
+The UEFI also lets me proudly use secure boot.  
+Why use secure boot? It's my answer to this question:
+
+<div style="margin-left: 1.3ch; padding-left: 1.1ch; border-left: 0.6ch solid #FFFFFF; display: flex; flex-direction: column;">
+  <span>
+    The EFI System Partition (ESP)
+    <a href="https://wiki.archlinux.org/title/EFI_system_partition#Format_the_partition"><em>cannot</em> be encrypted ⇗</a>.</span>
+    <span class="m-0">
+      Then, how do you boot from an unencrypted ESP's boot application
+      into an encrypted root, <em>safely</em>*?</span>
+  <small class="m-0">
+    *according to your threat model</small>
+</div>
+
+My answer to this question evolved over time.
+
+<div id="lmao" style="display: flex; justify-content: space-between; width: calc(round(down, 100%, 1ch));">old ◀──<span style="text-align: right;">──► new</span></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Unencrypted <span class="nowrap">/boot,</span> normal bootloader</th>
+      <th>Unencrypted ESP GRUB2 loads argon2id-encrypted <span class="nowrap">/boot</span> kernel</th>
+      <th>Secure boot with Unified Kernel Image (UKI)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="vertical-align: middle;">
+        <a href="https://twopointfouristan.wordpress.com/" target="_blank">2.4istan ⇗</a> is <em class="red">easy.</em></td>
+      <td>
+        A determined attacker able to 2.4istan will probably still mess with the EFI application in
+        <span class="nowrap">/efi.</span>
+        No one would ever know.</td>
+      <td>
+        The kernel has no "personal information", so a good integrity-check is better than hiddenness.
+        (Someone <em>can</em> still
+        <a href="https://en.wikipedia.org/wiki/Nonvolatile_BIOS_memory#:~:text=UEFI%20settings%20are%20still%20lost%20if%20the%20CMOS%20battery%20fails" target="_blank">remove the CMOS ⇗</a>
+        though)</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: middle;">Easy/lazy setup</td>
+      <td>
+        <a href="https://wiki.archlinux.org/title/Dm-crypt/Device_encryption#Configuring_the_kernel_parameters" target="_blank">Decryption needs to be run twice ⇗</a>:
+        <ol style="margin-bottom: 0;">
+          <li>
+            GRUB2 <span class="red">decrypts</span> the partition holding <span class="nowrap">/boot</span></li>
+          <li>
+            GRUB2 loads <span class="nowrap">/boot's</span> kernel and initramfs, then passes away</li>
+          <li>
+            The kernel <span class="red">decrypts</span> the root partition (even if <span class="nowrap">/boot</span> was already on it) then does mount+switch_root</li>
+        </ol>
+      </td>
+      <td>
+        UKI with secure boot dodges needing:
+        <ul class="m-0">
+          <li>
+            Multiple decryption (boots faster!)
+          </li>
+          <li>
+            <a href="https://leo3418.github.io/collections/gentoo-config-luks2-grub-systemd/packages.html#grub-212)" target="_blank">the Steinhardt GRUB2 argon2id patch ⇗</a>.
+            No intermediate bootloader supports argon2id
+          </li>
+          <li>
+            <a href="https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#Preparing_the_disk_6" target="_blank">
+            Using pbkdf2 instead of argon2id ⇗</a>
+            for disk encryption
+          </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Regarding secure boot, app-crypt/[sbctl ⇗](https://github.com/Foxboron/sbctl?tab=readme-ov-file#key-creation-and-enrollment)
+manages my secure boot keys.
+
+<div class="ml-3">
+  <p style="margin: 0;">Why sbctl?</p>
+  <ul>
+    <li>
+      It's more distro-agnostic than the
+      <a href="https://wiki.gentoo.org/wiki/Secure_Boot#Installation" target="_blank">secureboot USE flag ⇗</a></li>
+    <li>
+      It's less manual than <a href="https://www.rodsbooks.com/efi-bootloaders/controlling-sb.html#creatingkeys" target="_blank">Roderick W. Smith's method ⇗</a>
+      <ul><li>
+        sbctl comes with an install hook! Set-and-forget.</li></ul></li>
+  </ul>
+  <p style="margin: 0;">What keys do I use?</p>
+  <ul>
+    <li>
+      Self-signed (as expected)</li>
+    <li>Microsoft defaults
+      <ul><li>
+        My laptop has discrete Nvidia and no TPM2 eventlog;
+        I don't want to risk
+        <a href="https://github.com/Foxboron/sbctl/wiki/FAQ#option-rom" target="_blank">bricking anything ⇗</a>.
+        </li></ul></li>
+  </ul>
+</div>
+
+And finally, the UEFI menu is password protected.  
+(Imagine enabling secure boot but letting the F2 key dodge it.)
+
+<p><span class="bright">Takeaways:</span>
+At any time convenient to you (e.g. before or after your first successful boot):</p>
+
+<ol>
+  <li>Add a UEFI password</li>
+  <li>
+    Put UEFI Secure Boot into
+    <a href="https://wiki.gentoo.org/wiki/Secure_Boot#Installing_the_keys" target="_blank">setup mode ⇗</a>,
+    then boot</li>
+  <li>Compile app-crypt/sbctl</li>
+  <li>
+    Follow the sbctl
+    <a href="https://github.com/foxboron/sbctl?tab=readme-ov-file#key-creation-and-enrollment" target="_blank">
+      README ⇗</a>
+    and manpage. If /efi is unfindable, set the ESP_PATH (<a href="https://github.com/Foxboron/sbctl/issues/207#issuecomment-1652239359" target="_blank">issues/207 ⇗</a>)</li>
+</ol>
+
+## 2. Unified Kernel Image
+
+In a [normal boot setup ⇗](https://wiki.archlinux.org/title/Arch_boot_process#Feature_comparison):
+
+<style>
+</style>
+
+
+<ol style="margin-left: 1ch;">
+  <li>
+    UEFI finds, verifies, and then loads the EFI application
+    <ol class="incremental" type="1">
+      <li>
+        If the EFI application's path isn't obvious, i.e.
+        <a href="https://www.linuxfromscratch.org/blfs/view/svn/postlfs/grub-setup.html#:~:text=EFI/BOOT/BOOTX64.EFI" target="_blank" class="nowrap">/EFI/BOOT/BOOTX64.EFI ⇗</a>,
+        a boot entry must be set in the firmware.</li>
+      <li>
+      Verification only occurs if secure boot is set-up.</li>
+      <li>
+      Since the UEFI "knows" rather little, the EFI application is
+      typically an "intermediate bootloader". For example,
+      bootloaders make it easy what OS to choose from, or
+      what kernel setup to boot with.</li>
+    </ol>
+  </li>
+  <li>
+    The bootloader finds and loads the kernel (e.g.
+    <a href="https://en.wikipedia.org/wiki/vmlinuz" target="_blank">vmlinuz ⇗</a>)
+    and attaches the
+    <a href="https://sourcemage.org/HowTo/initramfs" target="_blank">initramfs ⇗</a>
+    (a small ram rootfs; has <span class="nowrap">/dev,</span> <span class="nowrap">/bin,</span> etc.)</li>
+  <li>
+    The kernel prepares hardware modules; the ram rootfs
+    does fsck and <em>mounts partitions</em></li>
+  <li>
+    The rootfs is
+    <a href="https://github.com/brgl/busybox/blob/abbf17abccbf832365d9acf1c280369ba7d5f8b2/util-linux/switch_root.c#L54" target="_blank">freed ⇗</a>
+    after <a href="https://sourcemage.org/HowTo/initramfs#:~:text=switch_root" target="_blank">switch_root ⇗</a></li>
+</ol>
+
+With a Unified Kernel Image (UKI), all of that is bundled. Instead of
+a separate some_bootloader.efi, vmlinuz, and an initramfs, we have
+one file, e.g. <span class="nowrap">/efi/EFI/Linux/hash-1.2.3-gentoo-dist.efi</span>.
+
+On my system:
+
+<ol style="margin-left: 1ch;">
+  <li>
+    UEFI finds, verifies, and loads the UKI
+    <ol class="incremental" type="1">
+      <li>
+        sys-boot/uefi-mkconfig
+        <a href="https://github.com/projg2/installkernel-gentoo/blob/05e2ba01182c1e8edb5211ddedb31e693868bde6/hooks/95-efistub-uefi-mkconfig.install#L32" target="_blank">autogenerates ⇗</a>
+        boot entries</li>
+      <li>Secure boot does its thing</li>
+      <li>The UEFI only "knows" how to run the UKI since
+        <a href="https://wiki.archlinux.org/title/EFI_boot_stub" target="_blank">efistub ⇗</a>
+        turned the bundle into an EFI application</li>
+    </ol>
+  </li>
+  <li>
+    efistub (not an intermediate <a href="https://wiki.archlinux.org/title/EFI_boot_stub#Using_UEFI_directly" target="_blank">bootloader ⇗</a>) loads
+  the kernel and initramfs kept within the UKI. My UKI is made with<ol class="incremental" type="1">
+      <li>Dracut (choice discussed later)</li>
+      <li>gentoo-kernel-bin (discussed in <a href="/conf/kernel">kernel ⟹</a>)</li>
+      <li>installkernel, via the kernel-install <em>USE</em> flag</li>
+    </ol></li>
+  <li>
+    The kernel prepares hardware modules; the kernel and initramfs
+    decrypt my LUKS2 partition (discussed in §3) and mounts the subvolumes of the
+    BTRFS partition within that partition onto 
+    <span class="nowrap">/system_root</span>
+    (discussed in §4).</li>
+  <li>
+    After a default Dracut module (a shellscript) asserts that
+    <span class="nowrap">/system_root</span>
+    looks sane, it runs `switch_root system_root`.</li>
+</ol>
+
+<span class="bright">Takeaways:</span>
+
+As a [consequence ⇗](https://github.com/gentoo/gentoo/blob/master/sys-kernel/installkernel/installkernel-50.ebuild#L48)
+of Dracut, I need systemd-utils*. Otherwise, follow the
+[Gentoo wiki ⇗](https://wiki.gentoo.org/wiki/Unified_kernel_image#Systemd_kernel-install), but
+install uefi-mkconfig instead of kernel-bootcfg.
+Then reinstall the Linux kernel.
+
+<small>
+*Alternatively, you could probably hand-roll your own UKI
+  to dodge the Dracut/kernel-install dep.</small>
+
+```bash path=/etc/portage/package.use/kernel
+sys-kernel/installkernel uki efistub dracut
+sys-apps/systemd-utils boot kernel-install
+```
+
+```bash path=/etc/portage/package.accept_keywords/uefi-mkconfig
+sys-boot/uefi-mkconfig ~amd64
+```
+
+## 3. LUKS2 ENCRYPTION
+
+I use Linux Unified Key Setup (LUKS2) to safely wrap up
+my BTRFS drive (discussed in §4). For safety, I [back up ⇗](https://gitlab.com/cryptsetup/cryptsetup/-/wikis/FrequentlyAskedQuestions#6-backup-and-data-recovery)
+the LUKS header offsite.
+
+<div class="ml-3">
+  <span class="bright">Refresher: What's LUKS?</span> Skip if familiar.
+
+  /dev/sda is a block device, a special file that gives you access to
+  some hardware "device" like an NVMe drive.
+  <a href="https://wiki.archlinux.org/title/Device_file#Block_devices" target="_blank">Arch Wiki ⇗</a>
+
+  Anything in /dev/mapper is a "virtual" block device -- it's
+  a kind of middleman between you and the actual hardware block device.
+  This is handled by the kernel "device mapper" subsystem.
+  <a href="https://en.wikipedia.org/wiki/Device_mapper#:~:text=Device%20mapper%20works%20by%20passing%20data" target="_blank">Wikipedia ⇗</a>
+
+  When you run <em>cryptsetup</em>, you call to the
+  <a href="https://gitlab.com/cryptsetup/cryptsetup/-/wikis/DMCrypt" target="_blank">dm-crypt ⇗</a>
+  system, which uses the kernel "device mapper" and kernel crypto API to:
+
+  <ol class="ol-override">
+    <li class="ol-li-override"><em>luksFormat</em>:
+    Put a header (the LUKS header) onto the block device to
+    describe some metadata.
+    <a href="https://wiki.archlinux.org/title/Data-at-rest_encryption#:~:text=additional%20convenience%20layer" target="_blank">ArchWiki ⇗</a></li>
+    <li class="ol-li-override"><em>luksOpen</em>:
+    Decrypt the block device (via password or keyfile), then
+      map it to some virtual block device in /dev/mapper.</li>
+  </ol>
+
+  This facilitates transparent (live) encryption:
+  
+<figure><pre>
+    ╭────────────╮               ╭───────────╮
+    │   mapped   │               │  mounted  │
+    ┴            ▼               ┴           ▼
+/dev/sda2      /dev/mapper/something       /home/somebody
+    ▲            ┬               ▲           ┬       ▲
+    │write actual│ translate msg │msg sent to│       │
+    │crypted data│ w/ encryption │ middleman │    You write
+    ╰────────────╯               ╰───────────╯    to a file
+</pre></figure>
+  </div>
+
+In order to boot with this setup, the initramfs must know:
+
+<ol>
+  <li>that we need to decrypt and map
+    <span class="nowrap">/dev/sda2</span> into
+    <span class="nowrap">/dev/mapper/cryptroot</span></li>
+  <li>where to mount
+    <span class="nowrap">/dev/mapper/cryptroot's</span>
+    volumes into</li>
+</ol>
+
+Since I use Dracut for the initramfs, I used the
+Dracut section for disk encryption in the
+[Gentoo wiki ⇗](https://wiki.gentoo.org/wiki/Full_Disk_Encryption_From_Scratch#Dracut).
+I also added `rd.luks.name`
+(to mount as <span class="nowrap">/dev/mapper/cryptroot</span>)
+and `rd.luks=1` for convenience. (See the
+[Arch wiki ⇗](https://wiki.archlinux.org/title/Dracut#LVM_/_software_RAID_/_LUKS))
+and [dracut(8) manpage ⇗](https://man.archlinux.org/man/dracut.8.en#:~:text=rd.luks=).)
+
+<span class="bright">Takeaways:</span>
+
+```bash path=/etc/dracut.conf
+# part 1: enable cryptsetup
+add_dracutmodules+=" dm crypt "
+kernel_cmdline+=" rd.luks.uuid=ad5e66e7-e890-4565-95f1-37f27600c8d4 \
+rd.luks.name=ad5e66e7-e890-4565-95f1-37f27600c8d4=cryptroot \
+root=UUID=310bf892-743d-4e57-b48d-4ccaa4265416 rd.luks=1 "
+```
+
+<pre><code><span style="color:#6A737D;"># Don't copy my UUIDs in the /etc/dracut.conf kernel command line!
+# Find and specify your own for <em>rd.luks.uuid=<span class="red">X</span></em> and <em>root=UUID=<span class="blue">X</span></em></span>
+$ sudo lsblk -o name,fstype,uuid,mountpoints
+NAME          FSTYPE      UUID                                 MOUNTPOINTS
+sda
+├─sda1        vfat        5085-8014                            /efi
+└─sda2        crypto_LUKS <em class="red">ad5e66e7-e890-4565-95f1-37f27600c8d4</em>
+  └─cryptroot btrfs       <em class="blue">310bf892-743d-4e57-b48d-4ccaa4265416</em>
+</code></pre>
+
+## 4. BTRFS
+
+BetterFS is a fantastic filesystem.
+
+
+## The below is not yet finished. Thanks for reading!
+
+---
+
+
+
+<pre><code data-language="bash">
+<span style="color:#B392F0;">cfdisk</span> /dev/sda
+</code></pre>
+
+uefi_secureboot_cert="/etc/efi-keys/DB.crt"
+uefi_secureboot_key="/etc/efi-keys/DB.key"
+
+```bash path=/etc/dracut.conf
+add_dracutmodules+=" actually-normal-fstab "
+use_fstab="yes"
+add_fstab+=" /etc/fstab "
+install_items+=" /mount-stuff "
+```
+
+<span class="bright">Takeaways:</span>
+
+3. Sudo chroot into an extracted Gentoo stagefile. Just follow the handbook.
+
+To prepare sbctl, I had to enter 
+
+<pre>
+  <code>
+$ <span style="color: #ad408e;">sudo lsblk -o name,fstype,uuid,mountpoints</span>
+NAME          FSTYPE      UUID                                 MOUNTPOINTS
+sda                                                            
+nvme0n1                                                        
+├─nvme0n1p1   vfat        5085-8014                            /efi
+└─nvme0n1p2   crypto_LUKS ad5e66e7-e890-4565-95f1-37f27600c8d4 
+  └─cryptroot btrfs       310bf892-743d-4e57-b48d-4ccaa4265416 /.snapshots
+  </code>
+</pre>
+
+
+sys-kernel/dracut/actually-normal-fstab-module.patch
+
+```diff path=/etc/portage/patches/sys-kernel/dracut/actually-normal-fstab-module.patch
+diff --git a/modules.d/99actually-normal-fstab/module-setup.sh b/modules.d/99actually-normal-fstab/module-setup.sh
+new file mode 100755
+index 00000000..a9607e19
+--- /dev/null
++++ b/modules.d/99actually-normal-fstab/module-setup.sh
+@@ -0,0 +1,15 @@
++#!/bin/sh
++
++# called by dracut
++check() {
++    return 0
++}
++
++# called by dracut
++depends() {
++    echo fs-lib
++}
++
++install() {
++    inst_hook mount 99 "$moddir/mount-normal-fstab.sh"
++}
+diff --git a/modules.d/99actually-normal-fstab/mount-normal-fstab.sh b/modules.d/99actually-normal-fstab/mount-normal-fstab.sh
+new file mode 100755
+index 00000000..8b6358f5
+--- /dev/null
++++ b/modules.d/99actually-normal-fstab/mount-normal-fstab.sh
+@@ -0,0 +1,34 @@
++#!/bin/sh
++
++set -x
++
++type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh
++type det_fs > /dev/null 2>&1 || . /lib/fs-lib.sh
++
++fstab_mount() {
++    test -e "$1" || return 1
++    info "Mounting from $1"
++    # Don't use --target-prefix since it will fail to mount '/' (already 'mounted')
++
++    sed -e '/\t\/efi\S*/d' -e '/btrfs defaults 0 0/d' -e 's/\t\//\t\/sysroot\//' "$1" > /tmp/fstab
++    mount --all --fstab /tmp/fstab
++    return 0
++}
++
++# systemd will mount and run fsck from /etc/fstab and we don't want to
++# run into a race condition.
++if [ -z "$DRACUT_SYSTEMD" ]; then
++    [ -f /etc/fstab ] && fstab_mount /etc/fstab
++fi
++
++# prefer $NEWROOT/etc/fstab.sys over local /etc/fstab.sys
++if [ -f "$NEWROOT"/etc/fstab ]; then
++    fstab_mount "$NEWROOT"/etc/fstab
++elif [ -f "$NEWROOT"/\@/etc/fstab ]; then
++    # in case of btrfs flat volumes, where root is a "@" subvol
++    fstab_mount "$NEWROOT"/\@/etc/fstab
++elif [ -f /etc/fstab ]; then
++    fstab_mount /etc/fstab
++fi
++
++set +x
+```
+
+▲▼◀
+
+──┴────┬────┤├ ──┼──
+
