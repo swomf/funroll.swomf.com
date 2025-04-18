@@ -24,7 +24,16 @@
   color: #96ecf7;
 }
 .magenta {
-  color: #ff8cfd;
+  color: #e292f0;
+}
+.purple {
+  color: #b392f0;
+}
+.grey {
+  color: #a0a0a0;
+}
+.\!grey {
+  color: #a0a0a0 !important;
 }
 .ol-override {
   counter-reset: override;
@@ -34,6 +43,9 @@
   content: counter(override) ". ";
   counter-increment: override;
   font-weight: var(--font-weight-medium);
+}
+.command::before {
+  content: "$ ";
 }
 </style>
 
@@ -403,7 +415,7 @@ root=UUID=310bf892-743d-4e57-b48d-4ccaa4265416 rd.luks=1 "
 
 <pre><code><span style="color:#6A737D;"># Don't copy my UUIDs in the /etc/dracut.conf kernel command line!
 # Find and specify your own for <em>rd.luks.uuid=<span class="red">X</span></em> and <em>root=UUID=<span class="blue">X</span></em></span>
-$ sudo lsblk -o name,fstype,uuid,mountpoints
+<span class="magenta command"></span><span class="purple">sudo</span> lsblk -o name,fstype,uuid,mountpoints
 NAME          FSTYPE      UUID                                 MOUNTPOINTS
 sda
 ├─sda1        vfat        5085-8014                            /efi
@@ -413,49 +425,110 @@ sda
 
 ## 4. BTRFS
 
-BetterFS is a fantastic filesystem.
+BetterFS is a fantastic filesystem for desktops.
 
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="2">Why BtrFS is better (■-■¬)</th>
+      <th>Why BtrFS is worse (◞‸◟；)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="vertical-align: middle;">ext4</td>
+      <td rowspan="2">BtrFS supports
+        <a target="_blank" href="https://btrfs.readthedocs.io/en/latest/Compression.html">transparent compression ⇗</a> often doubling de facto disk space and reducing writes.
+        <a target="_blank" href="https://www.phoronix.com/review/btrfs-zstd-compress/2">Benchmarks ⇗</a> <p>(compression is my primary use case)</p></td>
+      <td rowspan="2">BtrFS subvolumes make incremental snapshotting a cakewalk.
+        <a target="_blank" href="https://btrfs.readthedocs.io/en/latest/Subvolumes.html">BtrFS docs ⇗</a>
+<p><span class="red">Though,</span> actual backups are more danger-resistant.</p>
+    </td>
+      <td>ext4 is super battletested (<span class="red">though,</span> Facebook uses BtrFS.
+        <a target="_blank" href="https://lwn.net/Articles/824855/">article ⇗</a>)</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: middle;">xfs</td>
+      <td>xfs is more for
+        <a target="_blank" href="https://wiki.archlinux.org/title/XFS#:~:text=proficient%20at%20parallel%20IO">parallel workloads at scale ⇗</a>
+        so idk.</td>
+    </tr>
+    <tr>
+      <td>zfs</td>
+      <td>BtrFS uses
+        <a target="_blank" href="https://en.wikipedia.org/wiki/ZFS#Deduplication">less RAM ⇗</a> (my ZFS dealbreaker)</td>
+      <td>BtrFS is in-tree and easier to set up</td>
+      <td>idk. ask a freeBSD user</td>
+    </tr>
+  </tbody>
+</table>
 
-## The below is not yet finished. Thanks for reading!
+<p class="mb-0">
+  I use a "flat" subvolume layout.
+  <a target="_blank" href="https://archive.kernel.org/oldwiki/btrfs.wiki.kernel.org/index.php/SysadminGuide.html#Layout">Sysadmin guide ⇗</a>.
+</p>
 
----
+As an example, here's an approximation of how my BtrFS setup
+was made. It doesn't include the earlier steps, i.e. cryptsetup, mkfs.btrfs,
+and emergence of relevant packages such as btrfs-progs:
 
+<pre><code><span class="grey"># Something I find odd: you need to mount the main
+  btrfs filesystem <em>before</em> making subvols — instead of on
+  the device, you make subvols on the mountpoint. <em>e.g.</em></span>
+<span class="purple">mount</span> -t btrfs /dev/mapper/<em class="red">$cryptdevice</em> \
+  --mkdir /mnt
 
+<span class="purple">btrfs</span> subvolume create /mnt/@
+<span class="purple">btrfs</span> subvolume create /mnt/@
+<span class="purple">btrfs</span> sub c /mnt/@home
+<span class="purple">btrfs</span> sub c /mnt/@var_log
+<span class="purple">btrfs</span> sub c /mnt/@snapshots
+<span class="purple">umount</span> /mnt
 
-<pre><code data-language="bash">
-<span style="color:#B392F0;">cfdisk</span> /dev/sda
+<span class="grey"># I use <a
+      target="_blank"
+      href="https://opensource.com/article/20/6/linux-noatime#a-bit-about-file-timestamps"
+      class="!grey">noatime ⇗</a> to stop disk writes that
+  I don't care about (i.e. access time writes)</span>
+<span class="purple">mount</span> -t btrfs -o \
+  noatime,compress=zstd,subvol=@ \
+  /dev/mapper/<em class="red">$cryptdevice</em> \
+  --mkdir /mnt
+<span class="purple">mount</span> -t btrfs -o \
+  noatime,compress=zstd,subvol=@home \
+  /dev/mapper/<em class="red">$cryptdevice</em>
+  --mkdir /mnt/home
+<span class="purple">mount</span> -t btrfs -o \
+  noatime,compress=zstd,subvol=@var_log \
+  /dev/mapper/cryptroot --mkdir /mnt/var/log
+<span class="purple">mount</span> -t btrfs -o \
+  noatime,compress=zstd,subvol=@snapshots \
+  /dev/mapper/<em class="red">$cryptdevice</em>
+  --mkdir /mnt/.snapshots
+
+<span class="grey"># Boot sector</span>
+<span class="purple">mount</span> /dev/<em class="yellow">$sda1_probably</em> --mkdir /mnt/efi
 </code></pre>
 
-uefi_secureboot_cert="/etc/efi-keys/DB.crt"
-uefi_secureboot_key="/etc/efi-keys/DB.key"
+Unfortunately, due to the flat subvolume layout shown above, Dracut doesn't think that
+<em>/system_root</em> appears sane during boot time.
+
+I haven't run into this before, but I trial-and-errored in the sources
+and wrote my own Dracut module to fix it. (Dracut modules are just
+shell scripts with four or so expected functions.) And of course, to
+keep it managed by my package manager, I added it as a Portage patch:
+
+<span class="bright">Takeaways:</span>
+
+A flat BtrFS subvolume layout might need finagling:
 
 ```bash path=/etc/dracut.conf
 add_dracutmodules+=" actually-normal-fstab "
 use_fstab="yes"
 add_fstab+=" /etc/fstab "
-install_items+=" /mount-stuff "
 ```
 
-<span class="bright">Takeaways:</span>
-
-3. Sudo chroot into an extracted Gentoo stagefile. Just follow the handbook.
-
-To prepare sbctl, I had to enter 
-
-<pre>
-  <code>
-$ <span style="color: #ad408e;">sudo lsblk -o name,fstype,uuid,mountpoints</span>
-NAME          FSTYPE      UUID                                 MOUNTPOINTS
-sda                                                            
-nvme0n1                                                        
-├─nvme0n1p1   vfat        5085-8014                            /efi
-└─nvme0n1p2   crypto_LUKS ad5e66e7-e890-4565-95f1-37f27600c8d4 
-  └─cryptroot btrfs       310bf892-743d-4e57-b48d-4ccaa4265416 /.snapshots
-  </code>
-</pre>
-
-
-sys-kernel/dracut/actually-normal-fstab-module.patch
 
 ```diff path=/etc/portage/patches/sys-kernel/dracut/actually-normal-fstab-module.patch
 diff --git a/modules.d/99actually-normal-fstab/module-setup.sh b/modules.d/99actually-normal-fstab/module-setup.sh
@@ -521,7 +594,17 @@ index 00000000..8b6358f5
 +set +x
 ```
 
-▲▼◀
+## Conclusion
 
-──┴────┬────┤├ ──┼──
+I hope this isn't a <span class="red">Gentoo-specific</span>
+problem that let me use <span class="red">Gentoo-specific tools</span>
+to solve a <span class="red">Gentoo-specific problem.</span>
 
+But if it is, I don't regret it.
+
+Maybe I should have used
+<a target="_blank" href="">µgRD ⇗</a> for boot setup instead?
+It's specifically designed for Gentoo users while also being reasonably cross-distribution.
+
+Anyway, that's my Unified Kernel Image-based secure boot setup. You can
+do this on any distro, really. Unless your motherboard is wack.
