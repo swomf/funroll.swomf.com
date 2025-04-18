@@ -23,6 +23,9 @@
 .blue {
   color: #96ecf7;
 }
+.magenta {
+  color: #ff8cfd;
+}
 .ol-override {
   counter-reset: override;
 }
@@ -102,7 +105,8 @@ Why use secure boot? It's my answer to this question:
     *according to your threat model</small>
 </div>
 
-My answer to this question evolved over time.
+My answer to this question evolved over time. (Skip if you don't care
+about the thought process.)
 
 <div id="lmao" style="display: flex; justify-content: space-between; width: calc(round(down, 100%, 1ch));">old ◀──<span style="text-align: right;">──► new</span></div>
 
@@ -162,11 +166,11 @@ My answer to this question evolved over time.
   </tbody>
 </table>
 
-Regarding secure boot, app-crypt/[sbctl ⇗](https://github.com/Foxboron/sbctl?tab=readme-ov-file#key-creation-and-enrollment)
+In practice, app-crypt/[sbctl ⇗](https://github.com/Foxboron/sbctl?tab=readme-ov-file#key-creation-and-enrollment)
 manages my secure boot keys.
 
 <div class="ml-3">
-  <p style="margin: 0;">Why sbctl?</p>
+  <p class="m-0">Why sbctl?</p>
   <ul>
     <li>
       It's more distro-agnostic than the
@@ -176,7 +180,7 @@ manages my secure boot keys.
       <ul><li>
         sbctl comes with an install hook! Set-and-forget.</li></ul></li>
   </ul>
-  <p style="margin: 0;">What keys do I use?</p>
+  <p class="m-0">What keys do I use?</p>
   <ul>
     <li>
       Self-signed (as expected)</li>
@@ -219,20 +223,23 @@ In a [normal boot setup ⇗](https://wiki.archlinux.org/title/Arch_boot_process#
 
 <ol style="margin-left: 1ch;">
   <li>
-    UEFI finds, verifies, and then loads the EFI application
-    <ol class="incremental" type="1">
+    The UEFI firmware performs:
+    <ul>
       <li>
-        If the EFI application's path isn't obvious, i.e.
-        <a href="https://www.linuxfromscratch.org/blfs/view/svn/postlfs/grub-setup.html#:~:text=EFI/BOOT/BOOTX64.EFI" target="_blank" class="nowrap">/EFI/BOOT/BOOTX64.EFI ⇗</a>,
-        a boot entry must be set in the firmware.</li>
+        <strong class="yellow">finding:</strong>
+        A boot entry must be set in the UEFI firmware menu
+        if the EFI application's path isn't
+        <a href="https://www.linuxfromscratch.org/blfs/view/svn/postlfs/grub-setup.html#:~:text=EFI/BOOT/BOOTX64.EFI" target="_blank" class="nowrap">/EFI/BOOT/BOOTX64.EFI ⇗</a></li>
       <li>
-      Verification only occurs if secure boot is set-up.</li>
+      <strong class="blue">verifying:</strong>
+        only occurs if secure boot is enabled.</li>
       <li>
-      Since the UEFI "knows" rather little, the EFI application is
-      typically an "intermediate bootloader". For example,
-      bootloaders make it easy what OS to choose from, or
-      what kernel setup to boot with.</li>
-    </ol>
+        <strong class="magenta">loading: </strong>
+        The UEFI passes the baton to the EFI application —
+        typically some "intermediate bootloader" that lets
+        the user pick the kernel or operating system they want to run for
+        the next boot step.
+    </ul>
   </li>
   <li>
     The bootloader finds and loads the kernel (e.g.
@@ -249,7 +256,7 @@ In a [normal boot setup ⇗](https://wiki.archlinux.org/title/Arch_boot_process#
     after <a href="https://sourcemage.org/HowTo/initramfs#:~:text=switch_root" target="_blank">switch_root ⇗</a></li>
 </ol>
 
-With a Unified Kernel Image (UKI), all of that is bundled. Instead of
+With a Unified Kernel Image (UKI), all of that is <em>bundled.</em> Instead of
 a separate some_bootloader.efi, vmlinuz, and an initramfs, we have
 one file, e.g. <span class="nowrap">/efi/EFI/Linux/hash-1.2.3-gentoo-dist.efi</span>.
 
@@ -257,17 +264,25 @@ On my system:
 
 <ol style="margin-left: 1ch;">
   <li>
-    UEFI finds, verifies, and loads the UKI
-    <ol class="incremental" type="1">
+    The UEFI firmware runs through:
+    <ul>
       <li>
+        <strong class="yellow">finding: </strong>
         sys-boot/uefi-mkconfig
         <a href="https://github.com/projg2/installkernel-gentoo/blob/05e2ba01182c1e8edb5211ddedb31e693868bde6/hooks/95-efistub-uefi-mkconfig.install#L32" target="_blank">autogenerates ⇗</a>
-        boot entries</li>
-      <li>Secure boot does its thing</li>
-      <li>The UEFI only "knows" how to run the UKI since
+        my boot entries</li>
+      <li><strong class="blue">verifying: </strong>
+        thanks to sbctl</li>
+      <li><strong class="magenta">loading: </strong>
+        The UEFI only "knows" how to run the UKI since
         <a href="https://wiki.archlinux.org/title/EFI_boot_stub" target="_blank">efistub ⇗</a>
-        turned the bundle into an EFI application</li>
-    </ol>
+        turned the bundle into an EFI application
+        <ul>
+          <li><strong>Disadvantage:</strong> Secure boot + UKI =
+            I can't change boot params. DON'T CARE</li>
+        </ul>
+      </li>
+    </ul>
   </li>
   <li>
     efistub (not an intermediate <a href="https://wiki.archlinux.org/title/EFI_boot_stub#Using_UEFI_directly" target="_blank">bootloader ⇗</a>) loads
@@ -311,8 +326,9 @@ sys-boot/uefi-mkconfig ~amd64
 
 ## 3. LUKS2 ENCRYPTION
 
-I use Linux Unified Key Setup (LUKS2) to safely wrap up
-my BTRFS drive (discussed in §4). For safety, I [back up ⇗](https://gitlab.com/cryptsetup/cryptsetup/-/wikis/FrequentlyAskedQuestions#6-backup-and-data-recovery)
+I use Linux Unified Key Setup (LUKS2) to wrap my
+BTRFS drive (discussed in §4) with encryption.
+For safety, I [back up ⇗](https://gitlab.com/cryptsetup/cryptsetup/-/wikis/FrequentlyAskedQuestions#6-backup-and-data-recovery)
 the LUKS header offsite.
 
 <div class="ml-3">
@@ -372,7 +388,7 @@ Dracut section for disk encryption in the
 I also added `rd.luks.name`
 (to mount as <span class="nowrap">/dev/mapper/cryptroot</span>)
 and `rd.luks=1` for convenience. (See the
-[Arch wiki ⇗](https://wiki.archlinux.org/title/Dracut#LVM_/_software_RAID_/_LUKS))
+[Arch wiki ⇗](https://wiki.archlinux.org/title/Dracut#LVM_/_software_RAID_/_LUKS)
 and [dracut(8) manpage ⇗](https://man.archlinux.org/man/dracut.8.en#:~:text=rd.luks=).)
 
 <span class="bright">Takeaways:</span>
