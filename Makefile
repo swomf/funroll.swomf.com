@@ -14,7 +14,7 @@ WEB_ROOT = web_root
 include src/md2html/md2html.mk # for MD2HTML
 MD_INPUT_FILES = $(shell find $(CONTENT_DIR) -name "*.md")
 HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD_INPUT_FILES))
-COPY_INPUT_FILES = assets/butterfly/butterfly-with-text.webp src/css/monospace.css \
+COPY_INPUT_FILES = assets/butterfly/butterfly-with-text.webp \
 									 $(CONTENT_DIR)/index.html $(CONTENT_DIR)/typing-funroll.js \
 									 assets/butterfly/butterfly.svg $(CONTENT_DIR)/404.html
 # Unfortunately this is the cleanest way to make a non-redundant copy rule
@@ -27,7 +27,9 @@ endef
 $(foreach file,$(COPY_INPUT_FILES),$(eval $(call CREATE_COPY_RULE,$(file))))
 
 # Build a website at web_root
-web: $(HTML_OUTPUT_FILES) $(TOP_COPY_OUTPUT_FILES) $(WEB_ROOT) $(WEB_ROOT)/sitemap.xml $(COPY_OUTPUT_FILES)
+web: $(HTML_OUTPUT_FILES) $(TOP_COPY_OUTPUT_FILES) \
+	$(WEB_ROOT) $(WEB_ROOT)/sitemap.xml $(COPY_OUTPUT_FILES) \
+	$(WEB_ROOT)/main.css
 
 $(WEB_ROOT):
 	[ -d $@ ] || mkdir $@
@@ -36,7 +38,7 @@ $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 	@mkdir -p $(@D)
 	$(MD2HTML) $< --full-html \
 		--html-title="$(basename $(notdir $<)) | $(WEBSITE_NAME)" \
-		--html-css="/monospace.css" \
+		--html-css="/main.css" \
 		--html-url="$(WEBSITE_URL)" \
 		--stat \
 		> $@
@@ -46,6 +48,9 @@ $(WEB_ROOT)/sitemap.xml: $(HTML_OUTPUT_FILES) $(COPY_OUTPUT_FILES) | $(WEB_ROOT)
 	find $(WEB_ROOT) -not -name '404.html' | awk -v url=$(WEBSITE_URL) -v webrootdir=$(WEB_ROOT) \
 		'/index\.html$$/{sub(/index\.html$$/, ""); sub( webrootdir, ""); print "<url><loc>" url $$0 "</loc></url>"}' >> $@
 	echo "</urlset>" >> $@
+
+$(WEB_ROOT)/main.css: $(wildcard ./src/css/*.css)
+	cat $^ > $@
 
 webclean:
 	$(RM) -r $(WEB_ROOT)

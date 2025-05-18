@@ -1,54 +1,3 @@
-<style>
-.nowrap {
-  white-space: nowrap;
-}
-.m-0 {
-  margin: 0;
-}
-.ml-3 {
-  margin-left: 3ch;
-}
-.bright {
-  background-color: #FFFFFF;
-  color: #000000;
-  border-radius: 0.4ch;
-  padding: 0 0.5ch;
-}
-.yellow {
-  color: #edfc46;
-}
-.red {
-  color: #fc4646;
-}
-.blue {
-  color: #96ecf7;
-}
-.magenta {
-  color: #e292f0;
-}
-.purple {
-  color: #b392f0;
-}
-.grey {
-  color: #a0a0a0;
-}
-.\!grey {
-  color: #a0a0a0 !important;
-}
-.ol-override {
-  counter-reset: override;
-}
-.ol-li-override:before {
-  list-style-type: none;
-  content: counter(override) ". ";
-  counter-increment: override;
-  font-weight: var(--font-weight-medium);
-}
-.command::before {
-  content: "$ ";
-}
-</style>
-
 # booting
 
 I have a mildly complicated boot setup
@@ -106,7 +55,7 @@ keeps a boot entry for it (discussed in §2).
 The UEFI also lets me proudly use secure boot.  
 Why use secure boot? It's my answer to this question:
 
-<div style="margin-left: 1.3ch; padding-left: 1.1ch; border-left: 0.6ch solid #FFFFFF; display: flex; flex-direction: column;">
+<div class="quote">
   <span>
     The EFI System Partition (ESP)
     <a href="https://wiki.archlinux.org/title/EFI_system_partition#Format_the_partition"><em>cannot</em> be encrypted ⇗</a>.</span>

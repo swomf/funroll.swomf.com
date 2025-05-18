@@ -1,0 +1,65 @@
+/* ADDITIONS.CSS */
+
+/* tw-style utility classes */
+.nowrap {
+  white-space: nowrap;
+}
+.m-0 {
+  margin: 0;
+}
+.ml-3 {
+  margin-left: 3ch;
+}
+/* e.g. for Note: */
+.bright {
+  background-color: #FFFFFF;
+  color: #000000;
+  border-radius: 0.4ch;
+  padding: 0 0.5ch;
+}
+/* better block quote */
+.quote {
+  margin-left: 1.3ch;
+  /* margin-top is equally set in * + * in monospace.css  */
+  margin-top: var(--line-height);
+  margin-bottom: var(--line-height);
+  padding-left: 1.1ch;
+  border-left: 0.6ch solid #FFFFFF;
+  display: flex;
+  flex-direction: column;
+}
+/* colors */
+.yellow {
+  color: #edfc46;
+}
+.red {
+  color: #fc4646;
+}
+.blue {
+  color: #96ecf7;
+}
+.magenta {
+  color: #e292f0;
+}
+.purple {
+  color: #b392f0;
+}
+.grey {
+  color: #a0a0a0;
+}
+.\!grey {
+  color: #a0a0a0 !important;
+}
+/* override upstream monospace.css's list number styles */
+.ol-override {
+  counter-reset: override;
+}
+.ol-li-override:before {
+  list-style-type: none;
+  content: counter(override) ". ";
+  counter-increment: override;
+  font-weight: var(--font-weight-medium);
+}
+.command::before {
+  content: "$ ";
+}
