@@ -33,6 +33,22 @@ is otherwise a typical product of dodging an intermediate bootloader.
 
 Below, I'll discuss each step of the startup diagram in order
 (as opposed to the chronologically-ordered setup commands).
+In that sense, this is less of a guide (since I merely
+link to the guides); rather, it's a catalogue of the
+choices I made and why.
+
+In fact, in terms of chronology:
+
+1. I formatted space for the
+EFI partition and LUKS2, then set up the BtrFS partition
+and subvolumes inside the LUKS2 partition, installed Gentoo,
+then set up a Unified Kernel Image with gentoo-kernel-bin
+and Dracut.
+2. After booting successfully once, I set up
+secure boot within the UEFI, UKI, and sbctl-signed the
+EFI app.
+3. Some time later, I switched from gentoo-kernel-bin to
+gentoo-sources.
 
 # Boot process
 
@@ -49,7 +65,7 @@ keeps a boot entry for it (discussed in §2).
   The Gentoo wiki
   <a target="_blank" href="https://wiki.gentoo.org/wiki/Unified_kernel_image#Automated_EFI_stub_booting)">warns ⇗</a>
   that not all motherboards are fully UEFI-compliant. Too bad: they'll need to
-  chainload an intermediate bootloader (GRUB2, systemd-boot, etc.) instead.
+  chainload an "intermediate bootloader" (GRUB2, systemd-boot, etc.) instead.
 </div>
 
 The UEFI also lets me proudly use secure boot.  
@@ -67,7 +83,7 @@ Why use secure boot? It's my answer to this question:
 </div>
 
 My answer to this question evolved over time. (Skip if you don't care
-about the thought process.)
+about the thought process of protecting an encrypted root.)
 
 <div id="lmao" style="display: flex; justify-content: space-between; width: calc(round(down, 100%, 1ch));">old ◀──<span style="text-align: right;">──► new</span></div>
 
@@ -82,13 +98,16 @@ about the thought process.)
   <tbody>
     <tr>
       <td style="vertical-align: middle;">
-        <a href="https://twopointfouristan.wordpress.com/" target="_blank">2.4istan ⇗</a> is <em class="red">easy.</em></td>
+        A <a href="https://twopointfouristan.wordpress.com/" target="_blank">2.4istan ⇗</a> attack is <em class="red">easy.</em></td>
       <td>
-        A determined attacker able to 2.4istan will probably still mess with the EFI application in
+        A determined attacker able to 2.4istan will
+        <span class="red">probably still mess with the EFI application</span>
+        in
         <span class="nowrap">/efi.</span>
         No one would ever know.</td>
       <td>
-        The kernel has no "personal information", so a good integrity-check is better than hiddenness.
+        The kernel has no "personal information", so
+        <span class="green">a good integrity-check is better than hiddenness.</span>
         (Someone <em>can</em> still
         <a href="https://en.wikipedia.org/wiki/Nonvolatile_BIOS_memory#:~:text=UEFI%20settings%20are%20still%20lost%20if%20the%20CMOS%20battery%20fails" target="_blank">remove the CMOS ⇗</a>
         though)</td>
@@ -107,7 +126,7 @@ about the thought process.)
         </ol>
       </td>
       <td>
-        UKI with secure boot dodges needing:
+        UKI with secure boot <span class="green">dodges needing:</span>
         <ul class="m-0">
           <li>
             Multiple decryption (boots faster!)
@@ -127,8 +146,8 @@ about the thought process.)
   </tbody>
 </table>
 
-In practice, app-crypt/[sbctl ⇗](https://github.com/Foxboron/sbctl?tab=readme-ov-file#key-creation-and-enrollment)
-manages my secure boot keys.
+To do so, I use app-crypt/[sbctl ⇗](https://github.com/Foxboron/sbctl?tab=readme-ov-file#key-creation-and-enrollment)
+for managing my secure boot keys.
 
 <div class="ml-3">
   <p class="m-0">Why sbctl?</p>
@@ -139,7 +158,9 @@ manages my secure boot keys.
     <li>
       It's less manual than <a href="https://www.rodsbooks.com/efi-bootloaders/controlling-sb.html#creatingkeys" target="_blank">Roderick W. Smith's method ⇗</a>
       <ul><li>
-        sbctl comes with an install hook! Set-and-forget.</li></ul></li>
+        The
+        <a href="https://github.com/Foxboron/sbctl/tree/master/contrib" target="_blank">install hook ⇗</a>
+        exists but I still sbctl-sign manually.</li></ul></li>
   </ul>
   <p class="m-0">What keys do I use?</p>
   <ul>
@@ -249,8 +270,9 @@ On my system:
     efistub (not an intermediate <a href="https://wiki.archlinux.org/title/EFI_boot_stub#Using_UEFI_directly" target="_blank">bootloader ⇗</a>) loads
   the kernel and initramfs kept within the UKI. My UKI is made with<ol class="incremental" type="1">
       <li>Dracut (choice discussed later)</li>
-      <li>gentoo-kernel-bin (discussed in <a href="/conf/kernel">kernel ⟹</a>)</li>
-      <li>installkernel, via the kernel-install <em>USE</em> flag</li>
+      <li><span class="strike">gentoo-kernel-bin</span>
+        gentoo-sources (discussed in <a href="/conf/kernel">kernel ⟹</a>)</li>
+      <li>installkernel</li>
     </ol></li>
   <li>
     The kernel prepares hardware modules; the kernel and initramfs
@@ -270,7 +292,8 @@ As a [consequence ⇗](https://github.com/gentoo/gentoo/blob/master/sys-kernel/i
 of Dracut, I need systemd-utils*. Otherwise, follow the
 [Gentoo wiki ⇗](https://wiki.gentoo.org/wiki/Unified_kernel_image#Systemd_kernel-install), but
 install uefi-mkconfig instead of kernel-bootcfg.
-Then reinstall the Linux kernel.
+Then reinstall the Linux kernel, ensuring it is
+sbctl-signed and uefi-mkconfigged. 
 
 <small>
 *Alternatively, you could probably hand-roll your own UKI
@@ -466,7 +489,8 @@ Unfortunately, due to the flat subvolume layout shown above, Dracut doesn't thin
 I haven't run into this before, but I trial-and-errored in the sources
 and wrote my own Dracut module to fix it. (Dracut modules are just
 shell scripts with four or so expected functions.) And of course, to
-keep it managed by my package manager, I added it as a Portage patch:
+keep it managed by my package manager, I added it as a Portage patch
+(see below).
 
 <span class="bright">Takeaways:</span>
 
@@ -549,11 +573,11 @@ I hope this isn't a <span class="red">Gentoo-specific</span>
 problem that let me use <span class="red">Gentoo-specific tools</span>
 to solve a <span class="red">Gentoo-specific problem.</span>
 
-But if it is, I don't regret it.
-
 Maybe I should have used
 <a target="_blank" href="">µgRD ⇗</a> for boot setup instead?
 It's specifically designed for Gentoo users while also being reasonably cross-distribution.
 
 Anyway, that's my Unified Kernel Image-based secure boot setup. You can
 do this on any distro, really. Unless your motherboard is wack.
+
+See also: [kernel ⟹](/conf/kernel)

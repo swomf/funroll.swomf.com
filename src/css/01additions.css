@@ -10,6 +10,9 @@
 .ml-3 {
   margin-left: 3ch;
 }
+.strike {
+  text-decoration: line-through;
+}
 /* e.g. for Note: */
 .bright {
   background-color: #FFFFFF;
@@ -49,6 +52,9 @@
 }
 .\!grey {
   color: #a0a0a0 !important;
+}
+.green {
+  color: #19cb00;
 }
 /* override upstream monospace.css's list number styles */
 .ol-override {
