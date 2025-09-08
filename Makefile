@@ -98,8 +98,18 @@ diff: gentoo_install
 
 # Relies on $(PORTAGE_OUTPUT_FILES) to be correctly defined
 /%: gentoo_install/%
-	@printf "\033[1;32m      Syncing\033[0m %s \033[1;32m->\033[0m %s" "$<" "$@"
-	@if [ -f "$@" ]; then printf "\n" && diff --color=always "$@" "$<" || true; else printf "\033[1;32m (new)\033[0m\n"; fi
+	@# Multiple printfs for one message will lead to race conditions
+	@# when JOBS >= 1, so we repeat ourselves quite a bit
+	@if [ -f "$@" ]; then \
+		diff_output="$$(diff --color=always $@ $<)"; \
+		if [ -z "$${diff_output}" ]; then \
+			printf "\033[1;32m      Syncing\033[0m %s \033[1;32m->\033[0m %s\n" "$<" "$@"; \
+		else \
+			printf "\033[1;32m      Syncing\033[0m %s \033[1;32m->\033[0m %s\n%s\n" "$<" "$@" "$${diff_output}"; \
+		fi \
+	else \
+    printf "\033[1;32m      Syncing\033[0m %s \033[1;32m->\033[0m %s \033[1;32m(new)\033[0m\n" "$<" "$@"; \
+	fi
 	@case "$@" in \
 		*.sh | *.start) \
 	    $(INSTALL_CMD) -Dm755 "$<" "$@" \
