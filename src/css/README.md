@@ -13,6 +13,7 @@ and contains css mainly for HTML tags.
   * `<pre><code>` blocks have borders (see src/md2html)
   * Remove ligatures by using JetBrains Mono NL
   * Grandchildren of `<ol>` that are `<li>` do not increase the `<li>` counter
+  * Force dark mode
 
 ## additions.css
 
