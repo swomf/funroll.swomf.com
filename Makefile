@@ -64,12 +64,12 @@ webclean:
 tangle: gentoo_install
 include src/tangle/tangle.mk # for TANGLE
 
-# TODO: Should multithreading use -j, use nproc, or not be used at all?
+JOBS := $(if $(filter -j%, $(MAKEFLAGS)),$(subst -j,,$(filter -j%, $(MAKEFLAGS))),1)
 # NOTE: src/tangle/tangle is responsible for running mkdir -p here.
 #       therefore EVERYTHING is rebuilt anyway
 gentoo_install: $(MD_INPUT_FILES) $(TANGLE)
 	$(RM) -r $@
-	echo $(MD_INPUT_FILES) | xargs -n1 -P $(shell nproc) $(TANGLE)
+	echo $(MD_INPUT_FILES) | xargs -n1 -P $(JOBS) $(TANGLE)
 
 # If the user isn't root, only show a dry run.
 ifneq ($(shell id -u), 0)
