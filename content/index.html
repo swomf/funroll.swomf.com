@@ -16,21 +16,130 @@
     <link rel="stylesheet" href="/main.css">
   </head>
   <div>
-    <h1 style="margin-bottom: 0; text-transform: none !important; height: 2ch; white-space: nowrap; overflow-x: auto; scrollbar-width: none;" id="-funroll">-funroll</h1>
-    <hr style="margin-top: 0;">
-    <div style="display: flex; margin: 0;">
-      <div style="flex: 3;">
-        <p>I suppose this is my eeny Gentoo website.</p>
-        <p>It's <em style="color: #96ecf7;">very</em> indev. You can see a half-finished article <a href="conf/boot">here ⟹</a>.</p>
+    <h1 id="-funroll">-funroll</h1>
+    <hr id="top-hr">
+    <div id="top-hero-container">
+      <div id="top-hero-left">
+        <p>Welcome to my Gentoo website.</p>
+        <p>I love Gentoo. I also hate it. Therefore
+          you should trust me. :)</p>
+        <p>After convincing yourself of my site's
+          <em>raison d'etre</em>
+          below, maybe
+          <a href="/conf">my exact configs and the journey to get there ⟹</a>
+          will interest you. Now...</p>
       </div>
-      <div style="display: flex; width: 2px; background-color: #FFFFFF; margin: 0 2ch 0 2ch;"></div>
-      <div style="flex: 2; display: flex; justify-content: center; margin: 0;">
-        <img src="butterfly.svg" alt="A Gentoo butterfly" style="max-height: 20ch; max-width: 20ch;">
+      <div id="top-hero-divider"></div>
+      <div id="top-hero-right">
+        <img src="butterfly.svg" alt="A Gentoo butterfly" id="top-hero-gentoo-butterfly">
       </div>
     </div>
-    <p>This website was made with literate programming and an <em>impromptu</em>
-      static website generator written in C. Check out the
-      <a href="https://github.com/swomf/funroll.swomf.com" target="_blank">GitHub repo! ⇗</a></p>
+    <p><span class="purple">Imagine</span> you keep stubbing your foot on AI-enabled Windows Explorer,
+      or the Documents/ folder that is actually OneDrive, or the
+      magic residue you fired into the Windows Registry.
+      How <span class="grey">86ca1aa0-34aa-4e8b-a509-50c905bae2a2</span>-esque.</p>
+    <p><span class="purple">Imagine</span> you use Linux instead.
+      <em>Yay!</em>
+      Satisfaction with a system that actually likes you. Except
+      you sometimes still stub your toe on peculiar design decisions. You fix it
+      but forget it later on.</p>
+    <p><span class="purple">Imagine</span> you then jump to Arch Linux.
+      Less things to stub your toe here.
+      After some literacy and time, you set it up once, and
+      <em>boom,</em> rewards: 
+    </p>
+    <ol>
+      <li>A lord-tier wiki where you're the first-class citizen</li>
+      <li>Download-and-install packages that are mere text files</li>
+      <li>Oops, selective updates and downgrades are unsupported.</li>
+    </ol>
+    <p>If you have a life, you set up backups or jump to Fedora. Probably.
+    Unless you get dangerous ideas about how the system should work.
+    That the package manager should know what nonsense you add to source code.</p>
+    <p><span class="purple">Imagine</span> you go nuts and pick the guarantees of NixOS
+      or the assisted-Linux-from-source of Gentoo. Or maybe BSD.</p>
+    <p>The source code
+    has never been easier to slap a hot rod engine onto. Now the
+    easy stuff is harder, the hard stuff is easier,
+      and the impossible stuff is only hard.
+      Ground hurts your feet? Recompile it.</p>
+    <p class="m-0"><span class="purple">Imagine</span> you follow me into Gentoo land. Now we can</p>
+    <ul>
+      <li>Change install-time supports by
+        <em class="blue">USE</em> flags
+        (<em class="blue">package.use</em>)</li>
+      <li>Change install-time environment variables by
+        <em class="blue">package.env</em></li>
+      <li>Choose between stable, unstable, and bleeding-edge by
+        <em class="blue">package.ACCEPT_KEYWORDS</em></li>
+      <li>Handmake patches/use others' patches via <em class="blue">patches</em></li>
+      <li>Add little changes to install recipes via <em class="blue">install hooks</em></li>
+    </ul>
+    <p><em class="red">Caveat.</em> Those are all in different directories.
+      What if, for some grand plan, you change three things about one package and also change
+      one thing about three packages? How do you remember these should be synced?</p>
+    <div id="it-would-be-nice">
+      <p><em class="grey">It would be nice</em> if you had a bunch of Markdown files explaining code blocks.</p>
+      <p><em class="grey">It would be nicer</em> if you could automatically rip out the code blocks
+      right into your system config files so that the documentation syncs with the state.</p>
+      <p><em class="grey">It would be nicest</em> if this became a pretty website at the same time.</p></div>
+    <p>Congratulations! We invented <em class="purple">funroll</em>.
+      And as Donald Knuth envisioned, we have a literate programming architecture.</p>
+    <p>Now what? Maybe check out my <a href="/conf">configs ⟹</a>. They're
+      sardonically categorized for your viewing pleasure.</p>
+    <p>Or perhaps look at the
+      <a href="https://github.com/swomf/funroll.swomf.com" target="_blank">GitHub source code ⇗</a>
+      directly. My source code is quadruply nice since it's also minimal C.</p>
+    <p>Or watch paint dry. But why would you want to do that?</p>
   </div>
+  <style>
+  #top-hr {
+    margin-top: 0;
+  }
+  #-funroll {
+    margin-bottom: 0;
+    text-transform: none !important;
+    height: 2ch;
+    white-space: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  #top-hero-container {
+    display: flex;
+    margin: 0;
+  }
+  #top-hero-left {
+    flex: 3;
+  }
+  #top-hero-divider {
+    display: flex;
+    width: 2px;
+    background-color: var(--text-color);
+    margin: 0 2ch 0 2ch;
+  }
+  #top-hero-right {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+  }
+  #top-hero-gentoo-butterfly {
+    max-height: 20ch;
+    max-width: 20ch;
+  }
+  #it-would-be-nice {
+    /* vars are defined in monospace.css */
+    border: var(--border-thickness) solid var(--text-color);
+    padding: 
+      calc((var(--line-height) / 2))
+      calc(1ch - var(--border-thickness) / 2)
+      calc((var(--line-height) / 2) - (var(--border-thickness)))
+    ; 
+  }
+  #it-would-be-nice > p {
+    display: block;
+    margin: 0;
+  }
+  </style>
   <script src="/typing-funroll.js"></script>
 </html>
