@@ -71,8 +71,8 @@ keeps a boot entry for it (discussed in §2).
 The UEFI also lets me proudly use secure boot.  
 Why use secure boot? It's my answer to this question:
 
-<div class="quote">
-  <span>
+<blockquote>
+  <span class="m-0">
     The EFI System Partition (ESP)
     <a href="https://wiki.archlinux.org/title/EFI_system_partition#Format_the_partition"><em>cannot</em> be encrypted ⇗</a>.</span>
     <span class="m-0">
@@ -80,7 +80,7 @@ Why use secure boot? It's my answer to this question:
       into an encrypted root, <em>safely</em>*?</span>
   <small class="m-0">
     *according to your threat model</small>
-</div>
+</blockquote>
 
 My answer to this question evolved over time. (Skip if you don't care
 about the thought process of protecting an encrypted root.)

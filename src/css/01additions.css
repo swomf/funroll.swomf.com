@@ -21,7 +21,7 @@
   padding: 0 0.5ch;
 }
 /* better block quote */
-.quote {
+blockquote {
   margin-left: 1.3ch;
   /* margin-top is equally set in * + * in monospace.css  */
   margin-top: var(--line-height);
@@ -30,6 +30,16 @@
   border-left: 0.6ch solid #FFFFFF;
   display: flex;
   flex-direction: column;
+}
+blockquote > * {
+  margin-top: calc(var(--line-height) / 2);
+  margin-bottom: calc(var(--line-height) / 2);
+}
+blockquote > *:first-child {
+  margin-top: 0;
+}
+blockquote > *:last-child {
+  margin-bottom: 0;
 }
 /* colors */
 .yellow {
