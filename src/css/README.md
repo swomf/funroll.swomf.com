@@ -14,6 +14,7 @@ and contains css mainly for HTML tags.
   * Remove ligatures by using JetBrains Mono NL
   * Grandchildren of `<ol>` that are `<li>` do not increase the `<li>` counter
   * Force dark mode
+  * Add STIX as fallback for math symbols (though, STIX is not monospace)
 
 ## additions.css
 
