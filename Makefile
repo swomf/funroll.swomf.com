@@ -40,6 +40,7 @@ $(WEB_ROOT)/%/index.html: $(CONTENT_DIR)/%.md $(MD2HTML)
 		--html-title="$(basename $(notdir $<)) | $(WEBSITE_NAME)" \
 		--html-css="/main.css" \
 		--html-url="$(WEBSITE_URL)" \
+		--ftables \
 		--stat \
 		> $@
 
