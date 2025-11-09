@@ -1,5 +1,11 @@
 # kernel
 
+Below, I discuss a subtractive approach to compiling your own
+kernel, involving pseudocode for prep work chores after installation
+of a unified kernel image.
+
+<br />
+
 There are two methodological directions
 toward compiling your own kernel.
 
@@ -56,7 +62,9 @@ set up:
     gentoo-kernel-bin</li>
     <li class="ol-li-override">After booting, load the current config.gz into
     /usr/src/linux</li>
-    <li>Recompile the kernel (and, in my case, its EFISTUB setup)</li>
+    <li>Recompile the kernel manually
+      instead (and, in my case, with a Unified
+      Kernel Image efistub setup)</li>
   </ol>
 </div>
 
