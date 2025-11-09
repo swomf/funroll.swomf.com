@@ -69,7 +69,7 @@ gui-libs/eglexternalplatform ~amd64
 ```
 
 After installing nvidia-drivers, if you have secure boot enabled
-[like I do ⇗](/conf/kernel), you'll need to sign your Nvidia kernel objects.
+[like I do ⟹](/conf/kernel), you'll need to sign your Nvidia kernel objects.
 For a manually compiled kernel, I do the following:
 
 <pre><code><span class="magenta command"></span><span class="purple">./scripts/sign-file</span> sha512 \
