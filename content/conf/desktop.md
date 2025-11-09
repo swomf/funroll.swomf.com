@@ -1,8 +1,13 @@
 # desktop
 
-Below are some utilities I edit to make my desktop comfortable. I
+Below are some utilities I edit to make my desktop comfortable,
+such as screenshot utilities and file managers. I
 include a patch for a pet peeve, some trivial USE flag setups,
 and some "why do I use X instead of Y".
+
+The only Gentoo-specific advantageous change I make is the integration of
+a gui-apps/swappy patch into /etc/portage/patches.
+Other than this, the rest is plumbing.
 
 I use gui-wm/hyprland (uses the Wayland secure display protocol),
 since animations make tiling WMs more accessible
