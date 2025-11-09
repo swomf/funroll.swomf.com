@@ -136,6 +136,9 @@ though graphics will be an enormous hassle. See [nix ⇗](/conf/nix).
 
 ## 3. Octave
 
+Simple <em class="blue">USE</em> flags for the
+open-source equivalent to MATLAB.
+
 ```bash path=/etc/portage/package.use/math
 sci-mathematics/octave gnuplot imagemagick
 ```
