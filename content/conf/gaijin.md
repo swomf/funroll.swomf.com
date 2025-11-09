@@ -9,10 +9,10 @@ Japan exists.
 
 I implement Japanese input support via:
 
-1. app-i18n/mozc
-2. app-i18n/fcitx
-3. app-i18n/fcitx-anthy
-4. app-i18n/fcitx-configtool
+* app-i18n/mozc
+* app-i18n/fcitx
+* app-i18n/fcitx-anthy
+* app-i18n/fcitx-configtool
 
 I recommend the [ArchWiki article ⇗](https://wiki.archlinux.org/title/Mozc)
 as a guide.
@@ -22,6 +22,9 @@ recommendations to
 [change some warnings into errors ⇗](https://wiki.gentoo.org/wiki/LTO#GCC_Systems).
 One of fcitx's compile-time warnings becomes such an error.
 For safety, I disable its LTO via package.env below.
+
+See the [make.conf ⟹](/conf/make.conf/#:~:text=no-lto) article on the
+environment <em class="grey">no-lto</em> is referencing).
 
 ```bash path=/etc/portage/package.use/inputmethod
 app-i18n/mozc fcitx5
@@ -35,7 +38,7 @@ app-i18n/mozc ~amd64
 app-i18n/fcitx no-lto
 ```
 
-Once you set up autostart for fcitx5, it's a mere <em>CTRL+SPACe</em> to toggle input methods. I think.
+Once you set up autostart for fcitx5, it's a mere <em>CTRL+SPACE</em> to toggle input methods. I think.
 
 ## 2. japanese in the filesystem
 
