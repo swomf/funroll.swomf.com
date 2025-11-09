@@ -15,7 +15,7 @@ include src/md2html/md2html.mk # for MD2HTML
 MD_INPUT_FILES = $(shell find $(CONTENT_DIR) -name "*.md")
 HTML_OUTPUT_FILES = $(patsubst $(CONTENT_DIR)/%.md,$(WEB_ROOT)/%/index.html,$(MD_INPUT_FILES))
 COPY_INPUT_FILES = assets/butterfly/butterfly-with-text.webp \
-									 $(CONTENT_DIR)/index.html $(CONTENT_DIR)/typing-funroll.js \
+									 $(CONTENT_DIR)/index.html $(CONTENT_DIR)/index.js \
 									 assets/butterfly/butterfly.svg $(CONTENT_DIR)/404.html
 # Unfortunately this is the cleanest way to make a non-redundant copy rule
 COPY_OUTPUT_FILES =

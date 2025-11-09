@@ -15,139 +15,121 @@
     <meta name="darkreader-lock">
     <link rel="stylesheet" href="/main.css">
   </head>
-  <div>
+  <body>
     <h1 id="-funroll">-funroll</h1>
     <hr id="top-hr">
+    <br />
     <div id="top-hero-container">
       <div id="top-hero-left">
-        <p>Welcome to my Gentoo website.</p>
-        <p>I love Gentoo. I also hate it.
-          <br />
-          Thus, your narrator is trustworthy.</p>
-        <p>After convincing yourself of my site's
-          <em>raison d'etre</em>
-          below, maybe
-          <a href="/conf">my exact configs and the journey to get there ⟹</a>
-          will interest you.</p>
-        <p class="m-0">Until then...</p>
+        <p>behold, a gentoo.</p>
       </div>
       <div id="top-hero-divider"></div>
       <div id="top-hero-right">
         <img src="butterfly.svg" alt="A Gentoo butterfly" id="top-hero-gentoo-butterfly">
       </div>
     </div>
-    <h2>why does this website exist? (or yet another linux spiel)</h2>
-    <p><span class="purple">Imagine</span> you keep stubbing your foot on AI-enabled Windows Explorer,
-      or the Documents/ folder that is actually OneDrive, or the
-      magic nonsense you fired into the Windows Registry.
-      How <em class="grey">86ca1aa0-34aa-4e8b-a509-50c905bae2a2</em>-esque.</p>
-    <p><span class="purple">Imagine</span> you use Linux instead.
-      <em>Yay!</em>
-      Satisfaction with a system that actually likes you. Except
-      you sometimes still stub your toe on peculiar design decisions. You fix it
-      but forget it later on. Are your toes safe?</p>
-    <p><span class="purple">Imagine</span> you then jump to Arch Linux.
-      Less things to stub your toe here.
-      After some literacy and time, you set it up once, and
-      <em>boom,</em> rewards: 
-    </p>
-    <ol>
-      <li>A lord-tier wiki where you're the first-class citizen</li>
-      <li>Download-and-install packages that are mere text files</li>
-      <li>Oops! Selective updates and downgrades are unsupported.</li>
-    </ol>
-    <p>If you have a life, you set up pre-update backups or jump to Fedora. Probably.
-    Unless you get dangerous ideas about how the system should work.
-    That the package manager should track what you season its packages with.
-      That you want to patch easily.</p>
-    <p><span class="purple">Imagine</span> you go nuts and pick the guarantees of NixOS
-      or the assisted-Linux-from-source of Gentoo. Or maybe BSD.</p>
-    <p>The source code
-    has never been easier to slap a hot rod engine onto. Now the
-    easy stuff is harder, the hard stuff is easier,
-      and the impossible stuff is only hard.
-      Ground hurts your feet? Recompile it.</p>
-    <p class="m-0"><span class="purple">Imagine</span>
-      in particular: you follow me into Gentoo-land. Now we can</p>
-    <ul>
-      <li>Grow/reduce (suspiciously often, reduce) a package's feature set via
-        <em class="blue">USE</em> flags
-        in <em class="blue">package.use</em></li>
-      <li>Change build-time environment variables via
-        <em class="blue">package.env</em></li>
-      <li>Choose between stable, unstable, and bleeding-edge via
-        <em class="blue">package.ACCEPT_KEYWORDS</em></li>
-      <li>Handmake patches/use others' patches via <em class="blue">patches</em></li>
-      <li>Add little changes to install recipes via <em class="blue">install hooks</em></li>
-    </ul>
-    <p><em class="red">Caveat.</em> Those are all in different directories.
-      What if, for some grand plan, you change three things about one package and also change
-      one thing about three packages? How do you remember to keep these changes synced?</p>
-    <div id="it-would-be-nice">
-      <p><em class="purple">It would be nice</em> if you had a bunch of Markdown files
-        explaining the code blocks you added.</p>
-      <p><em class="purple">It would be nicer</em> if you could automatically rip out the code blocks
-      right into your system config files so that the documentation syncs with the state.</p>
-      <p><em class="purple">It would be nicest</em> if this became a pretty website at the same time.</p></div>
-    <p>Congratulations! We invented <em class="purple">funroll</em>.
-      And as Donald Knuth envisioned, we have a
-      <em class="blue">"literate programming" architecture</em>.
-      <a href="https://en.wikipedia.org/wiki/Literate_programming" target="_blank">(Wikipedia ⇗)</a></p>
-    <p>Now what? Maybe check out my <a href="/conf">configs ⟹</a>. They're
-      sardonically categorized for your viewing pleasure.</p>
-    <p>Or perhaps look at the
-      <a href="https://github.com/swomf/funroll.swomf.com" target="_blank">GitHub source code ⇗</a>
-      directly. My source code is quadruply nice since it's also minimal C.</p>
-    <p>Or watch paint dry. But why would you want to do that?</p>
-  </div>
+    <br />
+    <div>
+      <p class="right">why? wherefore? what does gentoo save us from?</p>
+      <p class="m-0 right blue italic">away from windows.</p>
+      <p class="m-0 right grey">ai-enabled windows explorer</p>
+      <p class="m-0 right grey">documents/ folder is onedrive</p>
+      <p class="m-0 right grey">86ca1aa0-34aa-4e8b-a509-50c905bae2a2</p>
+      <p class="mb-0 right blue italic">deeper than base linux.</p>
+      <p class="m-0 right grey">fix problems but forget them</p>
+      <p class="m-0 right grey">no partial up or downgrades</p>
+      <p class="m-0 right grey">archwiki+aur is peerless</p>
+      <p class="mb-0 right blue italic">the source becomes yours.</p>
+      <p class="m-0 right grey">grow+reduce the feature space in package.use</p>
+      <p class="m-0 right grey">change build-time definitions in package.env</p>
+      <p class="m-0 right grey">pick old/calm/new in package.accept_keywords</p>
+      <p class="m-0 right grey">bend code like paper in /etc/portage/patches</p>
+      <p class="m-0 right grey">edit ebuilds without forks via install hooks</p>
+      <p class="mb-0 right yellow italic">When the ground hurts your feet,</p>
+      <p class="m-0 right yellow italic" id="recompile-it">you recompile it.</p>
+      <p class="mb-0 right purple italic">A hundred directories,</p>
+      <p class="m-0 right purple italic">a thousand packages,</p>
+      <p class="m-0 right purple italic">zero land outside of your kingdom.</p>
+      <br />
+      <p class="right">but heavy is the memory that holds a hundred directories (╥ᆺ╥;)</p>
+      <hr />
+      <p>Yeah that's why I wrote <em class="purple">funroll</em>.
+        When one idea causes one change to three packages and three changes to one, I wanted
+        that written down neatly. Documentation as code, auto-synced to my system.</p>
+      <p>Donald Knuth called this wish
+        <em class="blue">"literate programming"</em>.
+        <a href="https://en.wikipedia.org/wiki/Literate_programming" target="_blank">Wikipedia ⇗</a>.</p>
+      <p>And of course, my Gentooic triptych —— site, knowledge base, conf tree ——
+        has minimal dependencies in C (the most fun language other than Rust).</p>
+      <br class="m-0" />
+      <p class="mt-0">Come join me where I've ranted about my
+        <a href="/conf" id="configs">configs ⟹</a>,
+        and how I'd gotten there.</p>
+      <p>Or perhaps look at my
+        <a href="https://github.com/swomf/funroll.swomf.com" target="_blank">GitHub source code ⇗</a>.
+        It's pretty understandable, you should be able to copy it to your system.</p>
+      <p>Or you can make this Linux blog fall apart. <button onclick="physics()" id="physics">annihilate</button></p>
+    </div>
+  </body>
   <style>
   #top-hr {
-    margin-top: 0;
+  margin-top: 0;
   }
   #-funroll {
-    margin-bottom: 0;
-    text-transform: none !important;
-    height: 2ch;
-    white-space: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
+  margin-bottom: 0;
+  text-transform: none !important;
+  height: 2ch;
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
   }
   #top-hero-container {
-    display: flex;
-    margin: 0;
+  display: flex;
+  margin: 0;
   }
   #top-hero-left {
-    flex: 3;
+  display: flex;
+  align-items: center;
+  flex: 3;
   }
   #top-hero-divider {
-    display: flex;
-    width: 2px;
-    background-color: var(--text-color);
-    margin: 0 2ch 0 2ch;
+  display: flex;
+  width: 2px;
+  background-color: var(--text-color);
+  margin: 0 2ch 0 2ch;
   }
   #top-hero-right {
-    flex: 2;
-    display: flex;
-    justify-content: center;
-    margin: 0;
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  margin: 0;
   }
   #top-hero-gentoo-butterfly {
-    max-height: 20ch;
-    max-width: 20ch;
+  max-height: 20ch;
+  max-width: 20ch;
   }
   #it-would-be-nice {
-    /* vars are defined in monospace.css */
-    border: var(--border-thickness) solid var(--text-color);
-    padding: 
-      calc((var(--line-height) / 2))
-      calc(1ch - var(--border-thickness) / 2)
-      calc((var(--line-height) / 2) - (var(--border-thickness)))
-    ; 
+  /* vars are defined in monospace.css */
+  border: var(--border-thickness) solid var(--text-color);
+  padding: 
+  calc((var(--line-height) / 2))
+  calc(1ch - var(--border-thickness) / 2)
+  calc((var(--line-height) / 2) - (var(--border-thickness)))
+  ; 
   }
   #it-would-be-nice > p {
-    display: block;
-    margin: 0;
+  display: block;
+  margin: 0;
+  }
+  .right {
+  text-align: right;
+  }
+  .italic {
+  font-style: italic;
+  }
+  #physics {
+    text-transform: lowercase !important;
   }
   </style>
-  <script src="/typing-funroll.js"></script>
+  <script src="/index.js"></script>
 </html>
