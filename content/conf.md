@@ -19,20 +19,19 @@ Welcome to the jungle. I'll be succinct.
 
 My configuration topics are sorted into:
 
-1. Useful —— has a patch I wrote, is information-dense
-2. Okay-ish —— half is plumbing, is information-sparse
-3. Obvious chores —— obvious, almost boring plumbing
+1. Fun —— has a patch I wrote, or has nice exposition
+2. Boring —— obvious, plumbing, nothing new to the table.
+Only here so that the <em class="purple">funroll</em> tangler
+can extract code blocks into my system conf files.
 
 Within these categories, articles
-are merely alphabetized.
+are sorted by alphabet.
 
-## useful
+## fun
 
-Probably decent reads. Includes patches
-and DIYing.
+I love Gentoo!
 
 <table class="conf-list">
-  <tr>
   <tr>
     <td><a href="/conf/art">art ⇒</a></td>
     <td>I stop you from disabling QoL features for no good reason,
@@ -49,24 +48,7 @@ and DIYing.
     <td><a href="/conf/boot">boot ⇒</a></td>
     <td>How I boot from a unified kernel image.
       Covers the "why", and links to the "how".</td>
-  </tr>
-  <tr>
-    <td><a href="/conf/graphics">graphics ⇒</a></td>
-    <td>I install custom completions for prime-run
-      via Portage install hook. Otherwise, I do boring flag plumbing.</td>
-  </tr>
-</table>
-
-
-## okay-ish
-
-Though there are some useful parts,
-these articles are mostly plumbing,
-such as adding obvious <em class="blue">USE</em>
-flags or enabling unstable versions via _~amd64_.
-Often short.
-
-<table class="conf-list">
+  </tr> 
   <tr>
     <td><a href="/conf/citrix">citrix ⇒</a></td>
     <td>I discuss the Gentoo Package Manager Specification and
@@ -87,20 +69,25 @@ Often short.
       and fix garbled characters on Japanese zipfile unzipping.</td>
   </tr>
   <tr>
+    <td><a href="/conf/graphics">graphics ⇒</a></td>
+    <td>I install custom completions for prime-run
+      via Portage install hook. Otherwise, I do boring flag plumbing.</td>
+  </tr>
+  <tr>
     <td><a href="/conf/jumbo-builds">jumbo builds ⇒</a></td>
     <td>I try to be clever about getbinpkg, but fail
-      due to bug 337456.</td>
+      due to bug #337456. I also discuss source-based distros.</td>
   </tr>
   <tr>
     <td><a href="/conf/kernel">kernel ⇒</a></td>
-    <td>I give pseudocode for a kernel chore and discuss
-    the "subtractive" approach to kernel configuration.</td>
+    <td>I give a script for a kernel chore and discuss
+      the "subtractive" approach to kernel configuration.</td>
   </tr>
   <tr>
     <td><a href="/conf/make.conf">make.conf ⇒</a></td>
     <td>I workaround a mold linker bug and set up compile-time niceness.
       Other than that, I set up march=native, LTO, global <em class="blue">USE</em>
-      and MAKEOPTS uninterestingly.
+      and MAKEOPTS obviously.
       <em class="red">Unfinished article.</em></td>
   </tr>
   <tr>
@@ -134,27 +121,25 @@ Often short.
     <td><a href="/conf/reading">reading ⇒</a></td>
     <td>I briefly patch default dark mode into app-text/evince.</td>
   </tr>
-<tr>
+  <tr>
     <td><a href="/conf/sound">sound ⇒</a></td>
     <td>I explain pipewire-pulse via a Gentoo NEWS item, compile easyeffects,
-    then add an install hook to fix the deep-filter ladspa's shared object file
-    for use with easyeffects.</td>
+      then add an install hook to fix the deep-filter ladspa's shared object file
+      for use with easyeffects.</td>
   </tr>
-<tr>
+  <tr>
     <td><a href="/conf/video">video ⇒</a></td>
     <td><em class="red">Unfinished article.</em></td>
   </tr>
-<tr>
+  <tr>
     <td><a href="/conf/zswap">zswap ⇒</a></td>
     <td>Define and implement zswap.</td>
   </tr>
 </table>
 
-## obvious chores
+## boring
 
-Articles that are worth less, but
-<em class="purple">funroll</em> has to
-compile code blocks from <em>somewhere</em>.
+I hate Gentoo.
 
 <table class="conf-list">
   <tr>
@@ -209,7 +194,7 @@ compile code blocks from <em>somewhere</em>.
     <td><a href="/conf/random-libs">random-libs ⇒</a></td>
     <td>Boring flag plumbing for miscellaneous libs.</td>
   </tr>
-<tr>
+  <tr>
     <td><a href="/conf/shell">shell ⇒</a></td>
     <td>I briefly set up the dash shell and plug my zsh theme.</td>
   </tr>
@@ -219,7 +204,13 @@ compile code blocks from <em>somewhere</em>.
       <em class="red">Unfinished article.</em></td>
   </tr>
   <tr>
-    <td><a href="/conf/tor">tor</a></td>
+    <td><a href="/conf/tor">tor ⇒</a></td>
     <td>I setup torbrowser-launcher::torbrowser in three lines.</td>
   </tr>
 </table>
+
+## claimer
+
+Sometimes writers put a disclaimer at the end of their work.
+
+Unfortunately I claim <em>everything</em>. (ˆ𐃷ˆ)
