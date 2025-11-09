@@ -25,7 +25,7 @@ toward compiling your own kernel.
 Left to middle is a "bloatless" "don't use XYZ
 until you need it" philosophy
 (since <span class="red">make localmodconfig</span> notes down any currently
-loaded drivers — [example localmodconfig usage ⇗](https://wiki.gentoo.org/wiki/User:Flexibeast/guides/A_minimal_Gentoo_kernel_for_your_hardware)). However it's less
+loaded drivers —— [example localmodconfig usage ⇗](https://wiki.gentoo.org/wiki/User:Flexibeast/guides/A_minimal_Gentoo_kernel_for_your_hardware)). However it's less
 pragmatic since the occurrence of an issue,
 such as some new peripheral you have ten minutes
 to try out not working, means

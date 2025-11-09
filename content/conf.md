@@ -19,9 +19,9 @@ Welcome to the jungle. I'll be succinct.
 
 My configuration topics are sorted into:
 
-1. Useful — has a patch I wrote, is information-dense
-2. Okay-ish — half is plumbing, is information-sparse
-3. Obvious chores — obvious, almost boring plumbing
+1. Useful —— has a patch I wrote, is information-dense
+2. Okay-ish —— half is plumbing, is information-sparse
+3. Obvious chores —— obvious, almost boring plumbing
 
 Within these categories, articles
 are merely alphabetized.

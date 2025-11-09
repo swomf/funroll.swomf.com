@@ -51,7 +51,7 @@ Then I install the following drivers, along with logging/testing software.
 * We <em>don't</em> need to explicitly install <span class="yellow">media-libs/mesa</span>. It's installed as a dependency.
   * Test: <em class="grey">x11-apps/mesa-progs</em> (for <span class="purple">glxinfo</span>)
 
-See [Gentoo: Intel ⇗](https://wiki.gentoo.org/wiki/Intel) and the VAAPI section. Also disable Nouveau and do other chores — see
+See [Gentoo: Intel ⇗](https://wiki.gentoo.org/wiki/Intel) and the VAAPI section. Also disable Nouveau and do other chores —— see
 [Gentoo: Nvidia ⇗](https://wiki.gentoo.org/wiki/NVIDIA/nvidia-drivers#Manually_Compiled_Kernel)
 
 ```bash path=/etc/portage/package.use/graphics

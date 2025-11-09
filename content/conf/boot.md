@@ -217,7 +217,7 @@ In a [normal boot setup ⇗](https://wiki.archlinux.org/title/Arch_boot_process#
         only occurs if secure boot is enabled.</li>
       <li>
         <strong class="magenta">loading: </strong>
-        The UEFI passes the baton to the EFI application —
+        The UEFI passes the baton to the EFI application ——
         typically some "intermediate bootloader" that lets
         the user pick the kernel or operating system they want to run for
         the next boot step.
@@ -446,7 +446,7 @@ was made. It doesn't include the earlier steps, i.e. cryptsetup, mkfs.btrfs,
 and emergence of relevant packages such as btrfs-progs:
 
 <pre><code><span class="grey"># Something I find odd: you need to mount the main
-  btrfs filesystem <em>before</em> making subvols — instead of on
+  btrfs filesystem <em>before</em> making subvols —— instead of on
   the device, you make subvols on the mountpoint. <em>e.g.</em></span>
 <span class="purple">mount</span> -t btrfs /dev/mapper/<em class="red">$cryptdevice</em> \
   --mkdir /mnt

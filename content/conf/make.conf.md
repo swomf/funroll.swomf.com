@@ -121,7 +121,7 @@ USE="${USE} dbus X wayland elogind -systemd pulseaudio pipewire modules-sign int
 ## 3. nicer compiles
 
 Often when I compile, I keep working. Then I don't want the CPU to give
-Portage all of its priority — especially if I have other apps running.
+Portage all of its priority —— especially if I have other apps running.
 
 ```bash path=/etc/portage/make.conf
 # Extremely low priority
