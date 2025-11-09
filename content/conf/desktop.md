@@ -1,13 +1,19 @@
 # desktop
 
-Below are some utilities I edit to make my desktop comfortable,
-such as screenshot utilities and file managers. I
-include a patch for a pet peeve, some trivial USE flag setups,
-and some "why do I use X instead of Y".
+Below are some utilities I edit to make my desktop comfortable.
 
-The only Gentoo-specific advantageous change I make is the integration of
+1. I set up gui-wm/hyprland, a window manager that uses the
+Wayland display protocol.
+2. I set up screenshotting, patching a poor keybind out of gui-wm/swappy.
+3. I discuss Windows+R style runners: fuzzel and anyrun.
+4. I set up Aylur's GTK Shell, which handles notifications and the bar
+with little RAM and easy TypeScript.
+5. I set up file managers and thumbnailing: app-misc/nnn and gnome-extra/nemo.
+
+The main Gentoo-specific advantageous change I make is the integration of
 a gui-apps/swappy patch into /etc/portage/patches.
-Other than this, the rest is plumbing.
+
+## 1. hyprland
 
 I use gui-wm/hyprland (uses the Wayland secure display protocol),
 since animations make tiling WMs more accessible
@@ -21,6 +27,8 @@ dev-libs/hyprgraphics ~amd64
 # hyprpaper: hypr ecosystem wallpaper
 dev-libs/hyprlang ~amd64
 ```
+
+## 2. screenshotting
 
 To screenshot, I use grim, swappy, slurp, wl-clipboard, and gpu-screen-recorder.
 But I hate that swappy closes when I hit Q, so I patch it out.
@@ -49,6 +57,10 @@ index 5b98590..3d73250 100644
 media-video/gpu-screen-recorder ~amd64
 ```
 
+I also integrate OCR into my screenshot setup; see [clipboard ⟹](/conf/clipboard).
+
+## 3. runners
+
 To open apps, I use gui-apps/anyrun::funroll,
 a windows+R style app runner. I packaged it myself
 on [::funroll ⇗](https://github.com/swomf/overlay-funroll/tree/main/gui-apps/anyrun) and
@@ -69,8 +81,11 @@ gui-apps/anyrun applications dictionary randr rink shell stdin symbols translate
 gui-apps/fuzzel png svg # just in case
 ```
 
-My bar is ags (Aylur's GTK Shell), since its TypeScript GTK support
-is expressive, minimal, and doesn't need a special language.
+## 4. aylur's gtk shell
+
+My bar and notification daemon are ags (Aylur's GTK Shell),
+since its TypeScript GTK support
+is expressive, minimal, and doesn't need a special domain-specific language.
 It depends on astal libs. Both are on ::funroll.
 
 ```bash path=/etc/portage/package.use/ags
@@ -84,6 +99,8 @@ net-misc/networkmanager vala
 gui-libs/gtk4-layer-shell vala
 gui-libs/gtk-layer-shell vala
 ```
+
+## 5. file manager
 
 For a file manager I use
 app-misc/nnn (terminal-based) and
