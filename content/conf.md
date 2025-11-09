@@ -12,6 +12,9 @@ width: 20ch;
 .conf-list td:last-child {
 text-align: left;
 }
+#footer-gentoo-butterfly {
+padding: 10% 20% 10% 20%;
+}
 </style>
 # all my confs
 
@@ -214,3 +217,7 @@ I hate Gentoo.
 Sometimes writers put a disclaimer at the end of their work.
 
 Unfortunately I claim <em>everything</em>. (ˆ𐃷ˆ)
+
+<div id="footer-gentoo-butterfly">
+  <img src="/butterfly.svg" alt="A Gentoo butterfly" id="top-hero-gentoo-butterfly">
+</div>
