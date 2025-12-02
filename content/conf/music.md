@@ -7,7 +7,7 @@ I found a bug ([#952950 ⇗](https://bugs.gentoo.org/952950)) in Gentoo's packag
 CELEBRATION 🎉🎉🎉🎉🎉🎉🎉
 
 ```bash path=/etc/portage/package.use/music
-media-sound/musescore jack test video
+media-sound/musescore video
 x11-base/xorg-server xvfb # for video
 ```
 
