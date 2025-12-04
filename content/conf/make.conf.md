@@ -190,5 +190,15 @@ GENTOO_MIRRORS="https://mirror.clarkson.edu/gentoo/ \
 From <span class="purple">cpuid2cpuflags</span>:
 
 ```bash path=/etc/portage/package.use/00cpu-flags
-*/* CPU_FLAGS_X86: aes avx avx2 f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse4_1 sse4_2 ssse3 vpclmulqdq
+*/* CPU_FLAGS_X86: aes avx avx2 avx_vnni bmi1 bmi2 f16c fma3 mmx mmxext pclmul popcnt rdrand sha sse sse2 sse3 sse4_1 sse4_2 ssse3 vpclmulqdq
 ```
+
+<div class="ml-3">
+  <span class="bright">Note:</span>
+  cpuid2cpuflags DOES get updated.
+  With each update, Gentoo's <em>USE_EXPAND</em> flags
+  will more closely match your CPU capabilities, so I recommend rerunning this now and then.
+
+  For example, the last time I reran this I got the new CPU flags
+  <em class="grey">avx_vnni, bmi1, bmi2</em>.
+</div>
