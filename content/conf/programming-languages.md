@@ -30,6 +30,9 @@ dev-lang/zig-bin
 # godot
 dev-games/godot ~amd64 # i dont use dotnet since
                        # csharp doesn't export to html5
+# go
+dev-lang/go ~amd64     # minor version changes here often have security fixes
+                       # and i prefer having the latest golang anyway
 ```
 
 ```bash path=/etc/portage/package.use/programming-languages
