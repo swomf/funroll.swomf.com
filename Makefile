@@ -130,8 +130,12 @@ clean:: webclean
 	$(RM) -r gentoo_install
 
 help:
-	@echo Run `make` and `make sync` to tangle your Markdown files and install.
-	@echo Run `make web` to turn your Markdown files into HTML.
-	@echo Run `make clean` to clean everything, or `make webclean` to only clean the web_root directory (since `make web` is not stateless)
+	@echo 'funroll - a literate programming knowledge base for Gentoo configuration'
+	@echo ''
+	@echo 'Run `make` and `make sync` to tangle your Markdown files and install.'
+	@echo 'Run `make web` to turn your Markdown files into HTML, in the web_root directory.'
+	@echo 'Run `make clean` to clean everything, or `make webclean` to only clean the web_root directory.'
+	@echo '    -> Running `make webclean` is useful if files in content/ are removed,'
+	@echo '       since Makefile will not remove extraneous web_root/ files.'
 
 .PHONY: all web webclean tangle diff sync _sync2_INTERNAL help
