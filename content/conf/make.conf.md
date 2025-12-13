@@ -111,7 +111,7 @@ Due to that, I need to add typical desktop stuff to global <em class="blue">USE<
 * <em class="grey">pulseaudio</em> and <em class="grey">pipewire</em>. See [sound ⟹](/conf/sound) to understand these.
 * <em class="grey">modules-sign</em>. It's somewhat helpful in secure boot <span class="grey">probably</span>.
 * <em class="grey">introspection</em>. Lots of apps depend on other apps to have
-GTK introspection as a <em class="grey">USE</em> flag, so it's too much effort
+GTK introspection as a <em class="blue">USE</em> flag, so it's too much effort
 NOT to make it global.
 
 ```bash path=/etc/portage/make.conf

@@ -18,7 +18,7 @@ media-video/pipewire pipewire-alsa
 ## 2. reaper
 
 Reaper, a digital audio workstation,
-has a similar vibe to WinRar:
+has a similar vibe to WinRAR:
 
 It's paidn't.
 

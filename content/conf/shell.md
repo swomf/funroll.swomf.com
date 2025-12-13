@@ -16,7 +16,6 @@ app-alternatives/sh -bash dash
 
 ```bash path=/etc/portage/package.accept_keywords/shell
 app-shells/zoxide ~amd64
-app-shells/fish           # decent completions,
-                          # for when I use sudo
+app-shells/fish           # decent completions for sudo
 app-shells/ohmyzsh **     # for my perfect theme
 ```

@@ -169,8 +169,8 @@ I hate Gentoo.
   </tr>
   <tr>
     <td><a href="/conf/firmware">firmware ⇒</a></td>
-    <td>(unmaintained) I prod at a worthless use of Gentoo's
-      <em class="blue">savedconfig</em> feature.</td>
+    <td>I prod at a worthless use of Gentoo's
+      <em class="blue">savedconfig</em> feature. <em class="red">Unmaintained.</em></td>
   </tr>
   <tr>
     <td><a href="/conf/games">games ⇒</a></td>

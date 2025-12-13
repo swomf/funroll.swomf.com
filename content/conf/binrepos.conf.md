@@ -35,7 +35,7 @@ There was one network issue I had to work around.
 
 After removing <span class="nowrap grey">/etc/portage/gnupg</span> and running
 
-<div class="italics ml-3"><span class="purple">sudo</span> getuto</div>
+<pre><code><span class="magenta command"></span><span class="purple">sudo</span> getuto</code></pre>
 
 my WiFi
 hung after primary openPGP keys were generated. I discovered that

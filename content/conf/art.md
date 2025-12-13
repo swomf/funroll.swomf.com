@@ -404,19 +404,19 @@ media-libs/libheif x265
     <td><span class="red">test</span></td>
   </tr>
   <tr>
-    <td>udev (device discovery, <span class="grey">probably related to gvfs or tablet device hotplugging idk</span>)</td>
+    <td>udev (device discovery, <em class="grey">probably related to gvfs or tablet device hotplugging idk</em>)</td>
     <td><em class="grey">idk lol</em></td>
     <td><span class="green">udev</span> (I use a drawing tablet
       and may un/replug it while GIMP is open)</td>
   </tr>
   <tr>
     <td>libunwind (call stack unwinding for debugging)</td>
-    <td><span class="grey">probably not</span></td>
+    <td><em class="grey">probably not</em></td>
     <td><span class="red">unwind</span></td>
   </tr>
   <tr>
     <td>Vala support (a language for building GTK stuff)</td>
-    <td><span class="grey">idk</span></td>
+    <td><em class="grey">idk</em></td>
     <td><span class="red">vala</span></td>
   </tr>
   <tr>
@@ -557,7 +557,7 @@ I'm too lazy.
     </tr>
   <tr>
       <td class="grey">compile-time testing</td>
-      <td><em class="grey">who cares?</em></td>
+      <td><span class="grey">who cares?</span></td>
       <td><span class="red">test</span></td>
     </tr>
   <tr>
@@ -581,9 +581,9 @@ dev-python/pyqt5 gui widgets declarative network
 dev-qt/qtcore icu
 ```
 
-## bonus: blender
+## other: blender
 
-Blender has good defaults on Gentoo, so I don't need to change any flags.
+I don't see a compelling reason to compile Blender.
 
 ```bash path=/etc/portage/package.accept_keywords/blender
 media-gfx/blender-bin ~amd64

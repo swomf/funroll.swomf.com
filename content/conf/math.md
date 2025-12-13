@@ -109,7 +109,7 @@ you can just check <em class="grey nowrap">/var/db/repos/gentoo/dev-texlive/texl
     <td><span class="red">xetex</span></td>
   </tr>
   <tr>
-    <td><span class="grey">idk when we use xml files, it hasn't come up</span></td>
+    <td><em class="grey">idk when we use xml files, it hasn't come up</em></td>
     <td><span class="red">xml</span></td>
   </tr>
 </table>
