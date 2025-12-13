@@ -170,7 +170,9 @@ media-libs/libglvnd             abi_x86_32
 media-libs/libsdl2              abi_x86_32
 net-libs/gnutls                 abi_x86_32
 media-libs/freetype             abi_x86_32
-media-libs/vulkan-loader        abi_x86_32
+media-libs/vulkan-loader        abi_x86_32 layers
+media-libs/vulkan-layers        abi_x86_32
+dev-util/vulkan-utility-libraries abi_x86_32
 x11-libs/libX11                 abi_x86_32
 x11-libs/libXext                abi_x86_32
 media-libs/alsa-lib             abi_x86_32
