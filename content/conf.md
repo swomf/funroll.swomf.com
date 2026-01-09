@@ -59,9 +59,8 @@ I love Gentoo!
   </tr>
   <tr>
     <td><a href="/conf/desktop">desktop ⇒</a></td>
-    <td>I patch a keybind change and an unreleased
-      crop feature into swappy, a screenshot editor.
-      <br />
+    <td>I patch three changes into the <em>swappy</em>
+      screenshot editor.
       The rest is an exposition
       on my desktop setup, which is usually only
       interesting to the author.</td>
