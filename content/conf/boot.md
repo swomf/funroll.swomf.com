@@ -452,7 +452,6 @@ and emergence of relevant packages such as btrfs-progs:
   --mkdir /mnt
 
 <span class="purple">btrfs</span> subvolume create /mnt/@
-<span class="purple">btrfs</span> subvolume create /mnt/@
 <span class="purple">btrfs</span> sub c /mnt/@home
 <span class="purple">btrfs</span> sub c /mnt/@var_log
 <span class="purple">btrfs</span> sub c /mnt/@snapshots
