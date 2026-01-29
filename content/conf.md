@@ -121,7 +121,8 @@ I love Gentoo!
   </tr>
   <tr>
     <td><a href="/conf/reading">reading ⇒</a></td>
-    <td>I briefly patch default dark mode into app-text/evince.</td>
+    <td>I briefly patch default dark mode into app-text/evince.
+    I also set up distro-agnostic Zathura+LazyVim synctex.</td>
   </tr>
   <tr>
     <td><a href="/conf/sound">sound ⇒</a></td>
