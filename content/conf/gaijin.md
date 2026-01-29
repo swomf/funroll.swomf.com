@@ -49,7 +49,7 @@ in this case, we need to Japanify the unzipping. [AskUbuntu ⇗](https://askubun
 app-arch/unzip natspec
 ```
 
-```bash /etc//etc/locale.gen
+```bash EMPTY/etc/locale.gen
 ... (previous stuff)
 ja_JP.UTF-8 UTF-8
 ... (next stuff)

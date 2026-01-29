@@ -88,6 +88,8 @@ main(int argc, char** argv)
     /* Strip trailing newline */
     line[strcspn(line, "\n")] = 0;
 
+    // FIXME: should this follow markdown specifications more strictly?
+    // (i.e. ```` would also work)
     if (strncmp(line, "```", 3) == 0) {
       inside_code_block = !inside_code_block;
       if (!inside_code_block) {

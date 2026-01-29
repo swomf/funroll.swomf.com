@@ -25,7 +25,7 @@ priority = 1
 sync-uri = https://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64-v3
 ```
 
-```bash fakepath=/etc/portage/make.conf
+```bash EMPTY/etc/portage/make.conf
 /etc/portage/make.conf
 # From binrepos.conf.md
 FEATURES="${FEATURES} binpkg-request-signature"

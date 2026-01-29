@@ -34,13 +34,13 @@ as well as
 (an external tool I wrote to decrease LaTeX compile time).
 The setup below allows forward and reverse search.
 
-```bash /null~/.config/nvim/lua/config/options.lua
+```bash EMPTY~/.config/nvim/lua/config/options.lua
 vim.g.vimtex_compiler_enabled = 0
 vim.g.vimtex_view_method = "zathura_simple"
 vim.g.vimtex_view_automatic = 1
 ```
 
-```bash /null~/.config/zathura/zathurarc
+```bash EMPTY~/.config/zathura/zathurarc
 # dark mode is default
 set recolor
 # synctex
