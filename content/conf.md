@@ -126,8 +126,9 @@ I love Gentoo!
   </tr>
   <tr>
     <td><a href="/conf/sound">sound ⇒</a></td>
-    <td>I explain pipewire-pulse via a Gentoo NEWS item, compile easyeffects,
-      then add an install hook to fix the deep-filter ladspa's shared object file
+    <td>I explain pipewire-pulse via a Gentoo NEWS item, compile easyeffects
+      with some trimming,
+      then add an install hook to fix media-sound/deep-filter's libdeep_filter_ladspa.so
       for use with easyeffects.</td>
   </tr>
   <tr>

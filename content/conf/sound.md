@@ -4,9 +4,10 @@ Below,
 
 1. I set up Pipewire via a Gentoo NEWS item.
 2. I deshittify my mic.
-   1. I set up easyeffects.
-   2. I add a Portage post-install hook to cleanly fix media-filter's .so
-   (shared object) location.
+   1. I set up easyeffects, with a Portage post-compile hook
+   that adds NoDisplay to some .desktop files.
+   2. I add a Portage post-install hook to cleanly fix
+   media-sound/media-filter's .so (shared object) location.
 
 ## 1. pipewire
 
@@ -35,6 +36,20 @@ Read about EasyEffects on the [ArchWiki ⇗](https://wiki.archlinux.org/title/Pi
 media-sound/easyeffects calf mda-lv2 zamaudio
 # pulled in as dep for above
 media-plugins/calf lv2
+```
+
+EasyEffects depends on lsp-plugins, which installs a bunch of BS into my
+<span class="nowrap">/usr/share/applications</span>
+directory. I install hook these out so I don't see stuff like "12 Channel Spectrum Analyzer"
+in app runners.
+
+```bash path=/etc/portage/env/media-libs/lsp-plugins
+post_src_compile() {
+  # If NotShowIn=GNOME is true, then add NoDisplay=true so the
+  # equivalent effect occurs in non-GNOME app runners
+  find . -type f -name '*.desktop' -exec \
+  sed -i '/^NotShowIn=GNOME *;$/a NoDisplay=true' {} +
+}
 ```
 
 ## 2.2 deep-filter ladspa
