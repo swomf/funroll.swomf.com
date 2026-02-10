@@ -159,3 +159,8 @@ at one point...)
 ## summary
 
 Nvidia :(
+
+See also: In my [games ⟹](/conf/games) config files, I spam the
+<em class="yellow">abi_x86_32</em> <em class="blue">USE</em> flag. In particular,
+since WINE is a 32-bit software, I add 32-bit support to loads of libs, including
+Nvidia's.

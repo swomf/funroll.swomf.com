@@ -138,6 +138,7 @@ x11-misc/colord                   abi_x86_32
 # nvidia
 gui-libs/egl-gbm                  abi_x86_32
 gui-libs/egl-wayland              abi_x86_32
+gui-libs/egl-wayland2             abi_x86_32
 gui-libs/egl-x11                  abi_x86_32
 x11-drivers/nvidia-drivers        abi_x86_32
 ```
