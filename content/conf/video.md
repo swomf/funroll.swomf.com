@@ -62,172 +62,170 @@ for no good reason.
   <tr>
     <td>32-bit (x86) libraries</td>
     <td><em class="grey">idk lol</em></td>
-    <td><span class="red">abi_x86_32</span></td>
+    <td><span class="yellow">abi_x86_32</span> (pulled in by wine-proton)</td>
   </tr>
   <tr>
-    <td>Add support for media-libs/alsa-lib (Advanced Linux Sound Architecture)</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">alsa</span></td>
+    <td>ALSA (sound architecture)</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L16" target="_blank">depends ⇗</a> on alsa</td>
+    <td><span class="red">alsa</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
-    <td>Enable AMD's Advanced Media Framework support via media-video/amdgpu-pro-amf</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">amf</span></td>
+    <td>AMD's Advanced Media Framework</td>
+    <td><a href="" target="_blank">--enable-amf ⇗</a>, via aur/ffmpeg-full only </td>
+    <td><span class="red">amf</span> (I have Intel/Nvidia)</td>
   </tr>
   <tr>
-    <td>Enable Adaptive Multi-Rate Audio support via media-libs/opencore-amr</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">amr</span></td>
+    <td>Adaptive Multi-Rate Audio, opencore</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L65" target="_blank">depends ⇗</a> on opencore-amr</td>
+    <td><span class="red">amr</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
-    <td>Enable Adaptive Multi-Rate Audio encoding support via media-libs/vo-amrwbenc</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>Adaptive Multi-Rate Audio encoding, vo-amrwbenc</td>
+    <td><a href="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=ffmpeg-full#n93" target="_blank">depends ⇗</a> on vo-amrwbenc, via ffmpeg-full only</td>
     <td><span class="red">amrenc</span></td>
   </tr>
   <tr>
-    <td>Enable Blu-ray filesystems reading support via media-libs/libbluray</td>
-  <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">bluray</span></td>
+    <td>Blu-ray filesystems reading support</td>
+  <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L36" target="_blank">--enable-libbluray ⇗</a></td>
+    <td><span class="red">libbluray</span> (I probably won't use a bluray adapter)</td>
   </tr>
   <tr>
-    <td>Enable Bauer Stereo-to-Binaural filter support via media-libs/libbs2b</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">bs2b</span></td>
+    <td>stereo-to-binaural filter</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L162" target="_blank">--enable-libbs2b ⇗</a></td>
+    <td><span class="red">bs2b</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
     <td>Enable bzip2 compression support</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">bzip2</span></td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L18" target="_blank">depends ⇗</a> on bzip2</td>
+    <td><span class="yellow">bzip2</span> <em class="grey">(idk what its pulled in by ngl)</em></td>
   </tr>
   <tr>
-    <td>Enable audio CDs reading via dev-libs/libcdio-paranoia</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>Audio CDs reading</td>
+    <td><a href="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=ffmpeg-full#n276" target="_blank">--enable-libcdio ⇗</a>, via ffmpeg-full only </td>
     <td><span class="red">cdio</span></td>
   </tr>
   <tr>
-    <td>Enable audio fingerprinting support via media-libs/chromaprint</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>Audio fingerprinting</td>
+    <td><a href="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=ffmpeg-full#n260" target="_blank">--enable-chromaprint</a>, via ffmpeg-full only</td>
     <td><span class="red">chromaprint</span></td>
   </tr>
   <tr>
-    <td>Builds libffmpeg.so to enable media playback in Chromium-based browsers like Opera and Vivaldi.</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>libffmpeg.so for media playback in Chromium-based browsers like Opera and Vivaldi.</td>
+    <td><em class="grey">Not sure if <a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L18" target="_blank">Arch's av_stream patch ⇗</a> and
+      <a href="https://github.com/gentoo/gentoo/blob/master/media-video/ffmpeg/files/chromium-r3.patch" target="_blank" >Gentoo's av_stream/Makefile patch ⇗</a> are the same</em></td>
     <td><span class="red">chromium</span></td>
   </tr>
   <tr>
-    <td>Enable codec2 low bit rate speech codec support via media-libs/codec2</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>Codec2 low bitrate speech codec support</td>
+    <td><a href="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=ffmpeg-full#n277" target="_blank">--enable-libcodec2 ⇗</a>, via ffmpeg-full only </td>
     <td><span class="red">codec2</span></td>
   </tr>
   <tr>
-    <td>Enable support for various GPU-accelerated filters using NVIDIA PTX compiled with llvm-core/clang</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">cuda</span></td>
+    <td>GPU-accelerated filters via NVIDIA PTX, compiled with llvm-core/clang</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L150" target="_blank">--enable-cuda-llvm ⇗</a></td>
+    <td><span class="green">cuda</span></td>
   </tr>
   <tr>
-    <td>Enable AV1 decoding support via media-libs/dav1d</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">dav1d</span></td>
+    <td>AV1 decoding</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L163" target="_blank">--enable-libdav1d ⇗</a></td>
+    <td><span class="red">dav1d</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
-    <td>Add extra documentation (API, Javadoc, etc). It is recommended to enable per package instead of globally</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>Make some extra docs</td>
+    <td><a href="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=ffmpeg-full#n253" target="_blank">--disable-htmlpages ⇗</a>, in ffmpeg-full but not ffmpeg? idk</td>
     <td><span class="red">doc</span></td>
   </tr>
   <tr>
-    <td>Enable use of x11-libs/libdrm for various hardware accelerated functions and Kernel Mode Setting screen capture </td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">drm</span></td>
+    <td>libdrm hardware acceleration and KMS screencaps</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L164" target="_blank">--enable-libdrm ⇗</a></td>
+    <td><span class="green">drm</span></td>
   </tr>
   <tr>
-    <td>Add support for DVDs</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">dvd</span></td>
+    <td>DVDs</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L165" target="_blank">--enable-libdvdnav --enable-libdvdread ⇗</a></td>
+    <td><span class="red">dvd</span> (I probably won't ffmpeg right from a dvd adapter)</td>
   </tr>
   <tr>
-    <td>Enable AAC (Advanced Audio Coding) encoding support via media-libs/fdk-aac in addition to FFmpeg's own implementation (warning: if USE=gpl is enabled, this produces a</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">fdk</span></td>
+    <td>Use Fraunhofer AAC for AAC in addition to ffmpeg's own implementation.
+    AAC is used in mp4, m4v, mkv, mov.</td>
+    <td><a href="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=ffmpeg-full#n283" target="_blank">--enable-libfdk-aac ⇗</a>, via ffmpeg-full only </td>
+    <td><span class="red">fdk</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
-    <td>) </td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">redistributable</span></td>
-  </tr>
-  <tr>
-    <td>Enable text-to-speech filter support via app-accessibility/flite</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>flite text-to-speech filter</td>
+    <td><a href="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=ffmpeg-full#n284" target="_blank">--enable-libflite ⇗</a>, via ffmpeg-full only </td>
     <td><span class="red">flite</span></td>
   </tr>
   <tr>
-    <td>Support for configuring and customizing font access via media-libs/fontconfig</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">fontconfig</span></td>
+    <td>Configure/customize font access via fontconfig</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L152" target="_blank">--enable-fontconfig ⇗</a></td>
+    <td><span class="green">fontconfig</span></td>
   </tr>
   <tr>
-    <td>Enable use of filters through media-plugins/frei0r-plugins</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">frei0r</span></td>
+    <td>frei0r filters</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L153" target="_blank">--enable-frei0r ⇗</a></td>
+    <td><span class="red">frei0r</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
-    <td>Enable Bidi support for the drawtext filter via dev-libs/fribidi</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">fribidi</span></td>
+    <td>Bidi support for the drawtext filter</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L168" target="_blank">--enable-libfribidi ⇗</a></td>
+    <td><span class="green">fribidi</span></td>
   </tr>
   <tr>
-    <td>Enable using dev-libs/libgcrypt for rtmp(t)e support (not needed if using any of USE=gmp,librtmp,openssl), and for obtaining random bytes (not needed if USE=openssl)</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>Use libgcrypt for rtmp(t)e support (not needed if using any of USE=gmp,librtmp,openssl), and for obtaining random bytes (not needed if USE=openssl)</td>
+    <td><a href="https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=ffmpeg-full#n262" target="_blank">--enable-libgcrypt ⇗</a>, ffmpeg-full only</td>
     <td><span class="red">gcrypt</span></td>
   </tr>
   <tr>
-    <td>Enables various game music formats support via media-libs/game-music-emu</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>Game music format support via media-libs/game-music-emu</td>
+    <td><a href="" target="_blank">--enable-libgme ⇗</a>, ffmpeg-full only</td>
     <td><span class="red">gme</span></td>
   </tr>
   <tr>
-    <td>Add support for dev-libs/gmp (GNU MP library)</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">gmp</span></td>
+    <td>GNU MP library</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L154" target="_blank">--enable-gmp ⇗</a> on </td>
+    <td><span class="green">gmp</span></td>
   </tr>
   <tr>
-    <td>Enable using net-libs/gnutls for TLS/HTTPS support and other minor functions (has no effect if USE=openssl is set) </td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td>Use net-libs/gnutls for TLS/HTTPS support and other minor functions (has no effect if USE=openssl is set) </td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L155" target="_blank">--enable-gnutls ⇗</a></td>
     <td><span class="red">gnutls</span></td>
   </tr>
   <tr>
-    <td>Enable use of GPL licensed code, should be kept enabled unless LGPL binaries are needed</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">gpl</span></td>
+    <td>Don't force LGPL</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L156" target="_blank">--enable-gpl ⇗</a></td>
+    <td><span class="yellow">gpl</span> (enabled by ebuild)</td>
   </tr>
   <tr>
-    <td>Add support for the gsm lossy speech compression codec</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">gsm</span></td>
+    <td>GSM lossy speech compression codec</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L170" target="_blank">--enable-libgsm ⇗</a></td>
+    <td><span class="green">gsm</span></td>
   </tr>
   <tr>
-    <td>Enable FireWire DV/HDV input device support via media-libs/libiec61883</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">iec61883</span></td>
+    <td>FireWire DV/HDV input devices</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L172" target="_blank">--enable-libiec61883 ⇗</a></td>
+    <td><span class="green">iec61883</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
-    <td>Enable FireWire/iLink IEEE1394 support (dv, camera, ...)</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">ieee1394</span></td>
+    <td>FireWire/iLink IEEE1394 support (dv, camera, ...)</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L35" target="_blank">depends ⇗</a> on libavc1394, libraw1394</td>
+    <td><span class="red">ieee1394</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
-    <td>Add support for the JACK Audio Connection Kit</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">jack</span></td>
+    <td>JACK Audio Connection Kit</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L173" target="_blank">--enable-libjack ⇗</a></td>
+    <td><span class="red">jack</span> <em class="grey">(I don't think I use it, I just use pipewire.
+      idrk what jack is ngl)</em></td>
   </tr>
   <tr>
-    <td>Support for JPEG 2000, a wavelet-based image compression format</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">jpeg2k</span></td>
+    <td>JPEG 2000</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L179" target="_blank">--enable-libopenjpeg ⇗</a></td>
+    <td><span class="red">jpeg2k</span> <em class="grey">(idk)</em></td>
   </tr>
   <tr>
-    <td>Add JPEG XL image support</td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">jpegxl</span></td>
+    <td>JPEG XL aka JXL</td>
+    <td><a href="https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/blob/main/PKGBUILD#L174" target="_blank">--enable-libjxl ⇗</a> on </td>
+    <td><span class="green">jpegxl</span></td>
   </tr>
   <tr>
     <td>Enable H.265/HEVC encoding support via media-libs/kvazaar</td>
@@ -501,8 +499,8 @@ for no good reason.
   </tr>
   <tr>
     <td>Enable VP8 and VP9 de/encoding support via media-libs/libvpx in addition to FFmpeg's own implementation (for decoding only) </td>
-    <td><a href="" target="_blank">makedepends ⇗</a> on </td>
-    <td><span class="red">vpx</span></td>
+    <td>(for webm encoding)<a href="" target="_blank">makedepends ⇗</a> on </td>
+    <td><span class="green">vpx</span></td>
   </tr>
   <tr>
     <td>Add support for 3D graphics and computing via the Vulkan cross-platform API</td>
@@ -557,7 +555,8 @@ for no good reason.
 </table>
 
 ```bash path=/etc/portage/package.use/ffmpeg
-media-video/ffmpeg cuda fontconfig gmp ladspa libaom libass bluray bs2b libdrm fribidi glslang gsm iec61883 jpegxl modplug mp3 opus libplacebo rav1e svg rubberband snappy soxr speex srt ssh svt-av1 theora libv4l v4l vorbis webp x264 x265 libxml2 xvid zimg nvdec nvenc opencl opengl vulkan sdl lame -bluray
+media-video/ffmpeg cuda fontconfig gmp ladspa libaom libass bluray bs2b libdrm fribidi glslang gsm iec61883 jpegxl modplug mp3 opus libplacebo rav1e svg rubberband snappy soxr speex srt ssh svt-av1 theora libv4l v4l vorbis webp x264 x265 libxml2 xvid zimg nvdec nvenc opencl opengl vulkan sdl lame -bluray vpx
+media-libs/libvpx abi_x86_32
 ```
 
 * no libdvdnav/dvdread/harfbuzz
