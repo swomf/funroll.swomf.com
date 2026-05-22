@@ -324,4 +324,5 @@ kernel_cmdline+=" split_lock_detect=off "
 ```bash path=/etc/portage/package.accept_keywords/gaming
 gui-wm/gamescope ~amd64
 media-libs/vkroots ~amd64
+games-util/gamemode ~amd64
 ```
