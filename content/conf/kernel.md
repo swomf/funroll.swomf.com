@@ -4,13 +4,25 @@ Below, I discuss a subtractive approach to compiling your own
 kernel, involving pseudocode for prep work chores after installation
 of a unified kernel image.
 
-<br />
+By the way, kconfig-wise, I don't do anything special other than enable zstd
+as much as I can (my favorite compression algorithm).
+That's because of the following goose-chase pattern:
+
+- Y -> N = save 4kb of memory
+- M -> N = save 400kb of disk space
+- N -> Y = an optimization that idek works because it would need benchmarking, and its probably too niche if the kernel devs didnt already enable it
+- N -> M = if the kernel developers didnt already enable it, its related to exotic hardware
+- M -> Y = save 0.0001 seconds compared to loading a module (unless its a bootup thing but my boot works just fine)
+
+That being said, kconfig rabbit holes are fun; try it once in a while.
+
+## compiling
 
 There are two methodological directions
 toward compiling your own kernel.
 
 <figure><pre>
-                   (begin from <span class="blue">zcat /proc/config.gz</span>)
+                      (begin from <span class="blue">a binary kconfig</span>)
 (begin from <span class="red">make</span>                    ┌──────────────┐
  <span class="red">localmodconfig</span>)       ┌────┐       │SUBTRACTIVE   │
 ┌──────────────┐  ┌────┘    └────┐  │>start with   │
@@ -28,7 +40,8 @@ until you need it" philosophy
 loaded drivers —— [example localmodconfig usage ⇗](https://wiki.gentoo.org/wiki/User:Flexibeast/guides/A_minimal_Gentoo_kernel_for_your_hardware)). However it's less
 pragmatic since the occurrence of an issue,
 such as some new peripheral you have ten minutes
-to try out not working, means
+to try out not working (it wasn't plugged in at the time, so udev didn't load the module).
+In this case,
 
 1. You have no working kernel copy.
 2. You must recompile the kernel asap.
@@ -38,11 +51,12 @@ a kernel setting and breaking something is fine
 since you have a previous working copy.
 
 Curiously, using gentoo-kernel-bin + secure boot
-will FORCE that out-of-tree kernel modules (read: Nvidia)
+will <em class="yellow">FORCE</em> that out-of-tree kernel modules
+(read: <span class="blue">Nvidia</span>)
 need to be signed. The irony
 is that the gentoo-kernel-bin obviously isn't
-distributed with the private key you need to do
-so ([source ⇗](https://wiki.gentoo.org/wiki/Signed_kernel_module_support#:~:text=by%20enabling%20Secure%20Boot)).
+distributed with the private key you would need in order
+to do said signing ([source ⇗](https://wiki.gentoo.org/wiki/Signed_kernel_module_support#:~:text=by%20enabling%20Secure%20Boot)).
 
 <span class="red">This is a Gentoo-specific UX issue.</span>
 
@@ -60,15 +74,15 @@ set up:
   <ol class="ol-override">
     <li class="ol-li-override">Install the system using
     gentoo-kernel-bin</li>
-    <li class="ol-li-override">After booting, load the current config.gz into
-    /usr/src/linux</li>
+    <li class="ol-li-override">After booting, load the current config into
+    /usr/src/linux (in Gentoo this is stored at /proc/config.gz)</li>
     <li>Recompile the kernel manually
       instead (and, in my case, with a Unified
       Kernel Image efistub setup)</li>
   </ol>
 </div>
 
-<span class="bright">How-to:</span>
+<span class="bright">Takeaways:</span>
 
 Use this:
 
@@ -77,7 +91,8 @@ sys-kernel/gentoo-sources symlink
 sys-kernel/linux-firmware compress-zstd savedconfig
 ```
 
-And then, with your system booted, copy the config but remove the key that we don't have. Then compile.
+And then, with your system booted, copy the config but remove the reference to
+the key that we don't have. Then compile.
 
 <pre><code><span class="magenta command"></span><span class="purple">cd</span> /usr/src/linux
 <span class="magenta command"></span><span class="purple">zcat</span> /proc/config.gz | <span class="purple">tee</span> .config
