@@ -326,3 +326,9 @@ gui-wm/gamescope ~amd64
 media-libs/vkroots ~amd64
 games-util/gamemode ~amd64
 ```
+
+```bash path=/etc/portage/package.use/gaming-mods
+# lethal company mods
+media-video/ffmpeg alsa
+x11-libs/gtk+ cups
+```
