@@ -35,7 +35,7 @@ you can just check <em class="grey nowrap">/var/db/repos/gentoo/dev-texlive/texl
   </tr>
   <tr>
     <td>Multi-byte east Asian characters</td>
-    <td><span class="red">cjk</span></td>
+    <td><span class="green">cjk</span></td>
   </tr>
   <tr>
     <td>ConTeXt macros. Less common to use.</td>
@@ -106,7 +106,7 @@ you can just check <em class="grey nowrap">/var/db/repos/gentoo/dev-texlive/texl
   </tr>
   <tr>
     <td>XeTeX (as opposed to LuaTeX or pdflatex)</td>
-    <td><span class="red">xetex</span></td>
+    <td><span class="green">xetex</span></td>
   </tr>
   <tr>
     <td><em class="grey">idk when we use xml files, it hasn't come up</em></td>
@@ -115,7 +115,8 @@ you can just check <em class="grey nowrap">/var/db/repos/gentoo/dev-texlive/texl
 </table>
 
 ```bash path=/etc/portage/package.use/math
-app-text/texlive extra graphics luatex png science
+app-text/texlive extra graphics luatex png science cjk xetex l10n_zh
+app-text/texlive-core cjk xetex
 ```
 
 ## 2. R
