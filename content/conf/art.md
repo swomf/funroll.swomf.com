@@ -464,6 +464,14 @@ media-libs/babl ~amd64
 media-libs/gegl ~amd64
 ```
 
+Also, sometimes the font tool causes lag spikes. That's because of
+Noto putting my `fc-list | wc -l` at over four thousand instead of
+a more palatable 2600. Thus:
+
+```bash path=/etc/portage/package.use/fonts
+media-fonts/noto -extra
+```
+
 ## 3. krita
 
 I'm too lazy.
