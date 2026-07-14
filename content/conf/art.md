@@ -581,6 +581,12 @@ dev-python/pyqt5 gui widgets declarative network
 dev-qt/qtcore icu
 ```
 
+```bash path=/etc/portage/package.accept_keywords/krita
+# because of the whole qt5->qt6 shebang, this is
+# marked unstable at the time of writing.
+media-gfx/krita ~amd64
+```
+
 ## other: blender
 
 I don't see a compelling reason to compile Blender.
