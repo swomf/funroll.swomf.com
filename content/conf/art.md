@@ -585,7 +585,7 @@ I'm too lazy.
 media-gfx/krita color-management fftw gif gsl heif jpegxl media mypaint-brush-engine webp xsimd
 # deps
 media-libs/opencv features2d
-dev-python/pyqt5 gui widgets declarative network
+dev-python/pyqt6 qml
 dev-qt/qtcore icu
 ```
 
