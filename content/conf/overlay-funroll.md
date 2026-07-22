@@ -25,8 +25,8 @@ sync-uri = /home/user/git/overlay-funroll
 ```bash path=/etc/portage/package.accept_keywords/overlays
 */*::guru ~amd64
 */*::funroll ~amd64
-*/*::gentoo-zh
-*/*::benzene-overlay
+*/*::hyproverlay ~amd64
+*/*::pentoo ~amd64
 ```
 
 ## how I made it
