@@ -208,4 +208,6 @@ From <span class="purple">cpuid2cpuflags</span>:
 
   For example, the last time I reran this I got the new CPU flags
   <em class="grey">avx_vnni, bmi1, bmi2</em>.
+
+  <strong class="red">TODO: </strong> Is cpuid_tool --cpuflags from dev-libs/libcpuid more accurate?
 </div>
