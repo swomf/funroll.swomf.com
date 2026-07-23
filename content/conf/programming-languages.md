@@ -38,6 +38,16 @@ dev-lang/go ~amd64     # minor version changes here often have security fixes
 ```bash path=/etc/portage/package.use/programming-languages
 # python
 dev-lang/python tk # for some legacy tkinter software
+# python due to the 3.13 -> 3.14 bump
+dev-python/packaging         PYTHON_TARGETS: python3_13
+dev-python/installer         PYTHON_TARGETS: python3_13
+dev-python/jaraco-functools  PYTHON_TARGETS: python3_13
+dev-python/more-itertools    PYTHON_TARGETS: python3_13
+dev-python/wheel             PYTHON_TARGETS: python3_13
+dev-python/trove-classifiers PYTHON_TARGETS: python3_13
+dev-python/gpep517           PYTHON_TARGETS: python3_13
+dev-python/flit-core         PYTHON_TARGETS: python3_13
+dev-python/setuptools        PYTHON_TARGETS: python3_13
 # rust
 dev-lang/rust-bin clippy doc prefix rust-analyzer rust-src rustfmt
 # node
