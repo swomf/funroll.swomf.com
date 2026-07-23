@@ -7,7 +7,7 @@ Wayland display protocol.
 2. I set up screenshotting, patching three changes into gui-wm/swappy.
 3. I discuss Windows+R style runners: fuzzel and anyrun.
 4. I set up Aylur's GTK Shell, which handles notifications and the bar
-with little RAM and easy TypeScript.
+with little RAM and easy TypeScript. (<strong class="red">TODO: </strong> migrate to Quickshell)
 5. I set up file managers and thumbnailing: app-misc/nnn and gnome-extra/nemo.
 
 The main Gentoo-specific advantageous change I make is the integration of
@@ -17,16 +17,18 @@ a gui-apps/swappy patch into /etc/portage/patches.
 
 I use gui-wm/hyprland (uses the Wayland secure display protocol),
 since animations make tiling WMs more accessible
-(i.e. visual responsivity). Below I add its ecosystem deps.
+(i.e. visual responsivity).
+
+I use unstable hyprland cuz I'd rather risk having new bugs than having old ones.
 
 ```bash path=/etc/portage/package.accept_keywords/hyprland
-# hyprlock: hypr ecosystem lockscreen
-gui-libs/hyprutils ~amd64
+gui-wm/hyprland ~amd64
+dev-libs/wayland-protocols ~amd64
+# required by xdg-desktop-portal-hyprland
 dev-cpp/sdbus-c++ ~amd64
-dev-libs/hyprgraphics ~amd64
-# hyprpaper: hypr ecosystem wallpaper
-dev-libs/hyprlang ~amd64
 ```
+
+Btw make sure you're on gcc 15 to avoid `class std::vector<unsigned char> has no member named append_range`
 
 ## 2. screenshotting
 
@@ -1592,9 +1594,27 @@ gui-apps/anyrun applications dictionary randr rink shell stdin symbols translate
 gui-apps/fuzzel png svg # just in case
 ```
 
-## 4. aylur's gtk shell
+## 4. aylur's gtk shell or quickshell?
 
-My bar and notification daemon are ags (Aylur's GTK Shell),
+Aylur's GTK shell is a bit annoying because upstream does BREAKING CHANGES
+too fast. I want to write a bar and never touch it again lol.
+
+A possible more powerful alternative in QT instead of GTK is gui-apps/quickshell::guru.
+The theming is handled differently. Below I set up brief quickshell stuff, but I'm still
+mid-migration.
+
+```bash path=/etc/portage/package.accept_keywords/quickshell
+dev-libs/libdwarf ~amd64
+dev-cpp/cpptrace ~amd64
+```
+
+```bash path=/etc/portage/package.use/quickshell
+# why can't I just rip cpptrace unwind out of
+# quickshell? this is annoying
+dev-cpp/cpptrace unwind
+```
+
+Other than that, my bar and current notification daemon are ags (Aylur's GTK Shell),
 since its TypeScript GTK support
 is expressive, minimal, and doesn't need a special domain-specific language.
 It depends on astal libs. Both are on ::funroll.
@@ -1611,8 +1631,104 @@ gui-libs/gtk4-layer-shell vala
 gui-libs/gtk-layer-shell vala
 ```
 
-<span class="red">TODO:</span> another breaking change has hit ags. I need to
-update to v3 at some point.
+Some bullshit I have to do right now though, is that I don't want to migrate to
+ags v3 and the contemporaneous astal libs. I am still on ags v2.3.0, and
+although the astal libs aren't really well-versioned at that time, they
+are also contemporaneously sourced. Therefore I have to manually backport
+the IPC API changes that Hyprland introduced in v0.55.
+
+"Why not just upgrade to v3?" I'd rather just quickshell it at this point.
+
+```bash none=/etc/portage/patches/gui-libs/astal/v0.55-backport.patch
+diff --git a/lib/hyprland/client.vala b/lib/hyprland/client.vala
+index 3f2d0fb..61de090 100644
+--- a/lib/hyprland/client.vala
++++ b/lib/hyprland/client.vala
+@@ -56,20 +56,19 @@ public class Client : Object {
+     }
+ 
+     public void kill() {
+-        Hyprland.get_default().dispatch("closewindow", @"address:0x$address");
++        Hyprland.get_default().dispatch(@"hl.dsp.window.close({ window = \"address:0x$address\" })");
+     }
+ 
+     public void focus() {
+-        Hyprland.get_default().dispatch("focuswindow", @"address:0x$address");
++        Hyprland.get_default().dispatch(@"hl.dsp.focus({ window = \"address:0x$address\" })");
+     }
+ 
+     public void move_to(Workspace ws) {
+-        var id = ws.id;
+-        Hyprland.get_default().dispatch("movetoworkspacesilent", @"$id,address:0x$address");
++        Hyprland.get_default().dispatch(@"hl.dsp.window.move({ workspace = $(ws.id), follow = false, window = \"address:0x$address\" })");
+     }
+ 
+     public void toggle_floating() {
+-        Hyprland.get_default().dispatch("togglefloating", @"address:0x$address");
++        Hyprland.get_default().dispatch(@"hl.dsp.window.float({ window = \"address:0x$address\" })");
+     }
+ }
+ 
+diff --git a/lib/hyprland/hyprland.vala b/lib/hyprland/hyprland.vala
+index 0553d71..f66dd92 100644
+--- a/lib/hyprland/hyprland.vala
++++ b/lib/hyprland/hyprland.vala
+@@ -199,8 +199,8 @@ public class Hyprland : Object {
+         return "";
+     }
+ 
+-    public void dispatch(string dispatcher, string args) {
+-        var msg = "dispatch " + dispatcher + " " + args;
++    public void dispatch(string lua_expr) {
++        var msg = "dispatch " + lua_expr;
+         message_async.begin(msg, (_, res) => {
+             var err = message_async.end(res);
+             if (err != "ok")
+@@ -209,8 +209,7 @@ public class Hyprland : Object {
+     }
+ 
+     public void move_cursor(int x, int y) {
+-        dispatch("movecursor", x.to_string() + " " + y.to_string());
+-
++        dispatch(@"hl.dsp.cursor.move({ x = $x, y = $y })");
+     }
+ 
+     // TODO: nag vaxry to make socket events and hyprctl more consistent
+diff --git a/lib/hyprland/monitor.vala b/lib/hyprland/monitor.vala
+index 6c46142..b152246 100644
+--- a/lib/hyprland/monitor.vala
++++ b/lib/hyprland/monitor.vala
+@@ -66,7 +66,7 @@ public class AstalHyprland.Monitor : Object {
+     }
+ 
+     public void focus() {
+-        Hyprland.get_default().dispatch("focusmonitor", id.to_string());
++        Hyprland.get_default().dispatch(@"hl.dsp.focus({ monitor = $id })");
+     }
+ 
+     public enum Transform {
+diff --git a/lib/hyprland/workspace.vala b/lib/hyprland/workspace.vala
+index 075f86f..60d5e15 100644
+--- a/lib/hyprland/workspace.vala
++++ b/lib/hyprland/workspace.vala
+@@ -47,11 +47,11 @@ public class Workspace : Object {
+     }
+ 
+     public void focus() {
+-        Hyprland.get_default().dispatch("workspace", id.to_string());
++        Hyprland.get_default().dispatch(@"hl.dsp.focus({ workspace = $id })");
+     }
+ 
+     public void move_to(Monitor m) {
+-        Hyprland.get_default().dispatch("moveworkspacetomonitor", id.to_string() + " " + m.id.to_string());
++        Hyprland.get_default().dispatch(@"hl.dsp.workspace.move({ workspace = $id, monitor = $(m.id) })");
+     }
+ }
+ }
+```
+
+Something interesting I anticipate later is talking about software rendering vs.
+assigning useless GPU contexts, and how this affects RAM in GTK4/QT6-era applications.
 
 ## 5. file manager
 
