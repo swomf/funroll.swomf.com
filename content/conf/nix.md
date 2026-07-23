@@ -52,3 +52,7 @@ dev-cpp/toml11 ~amd64
 dev-util/cargo-c ~amd64 # avoids slot conflict in 2025-04-30
                         # because libgit2 should be version 1.9
 ```
+
+<span class="bright">Aside.</span> On 2026-07-23, a while after I upgraded to gcc 15 instead of gcc 14,
+updating Nix broke due to a LTO bytecode link error thing related to app-text/lowdown-nix. Thus I had to
+emerge -av1 app-text/lowdown-nix then retry.
