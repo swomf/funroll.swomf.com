@@ -140,18 +140,25 @@ Of course, if I WANT my CPU to work harder, I might run something like this:
 
 <pre><code><span class="magenta command"></span><span class="purple">MAKEOPTS=-j12 sudo -E emerge</span> -uDNav @world --keep-going</code></pre>
 
-## 4. secure boot
+<h2 id="secure-boot">4. secure boot</h2>
 
-<strong class="red">TODO:</strong> I'm not even sure I need this for manual kernel installs.
+See the wiki on [secure boot ⇗](https://wiki.gentoo.org/wiki/Secure_Boot#USE_flags).
 
-<strong class="red">TODO:</strong> I'm not sure this calls to the sbctl keys correctly anyway.
+The actual <em>secureboot</em> <em class="blue">USE</em> flag doesn't
+affect gentoo-sources which I use.
+
+<strong class="red">TODO:</strong> I'm pretty sure I need to sign
+the nvidia .ko objects for manual kernel installs since they don't
+force module.sig_enforce=1 or lockdown=integrity. I migrated
+away from using gentoo-kernel-bin.
 
 ```bash path=/etc/portage/make.conf
-USE="${USE} secureboot"
-MODULES_SIGN_KEY=/var/lib/sbctl/keys/db/db.key
-MODULES_SIGN_CERT=/var/lib/sbctl/keys/db/db.pem
-SECUREBOOT_SIGN_KEY=/var/lib/sbctl/keys/db/db.key
-SECUREBOOT_SIGN_CERT=/var/lib/sbctl/keys/db/db.pem
+# USE="${USE} secureboot" # only needed for binary/dist stuff; I use UKI
+MODULES_SIGN_KEY=/usr/src/linux/certs/signing_key.pem
+MODULES_SIGN_CERT=/usr/src/linux/certs/signing_key.x509
+MODULES_SIGN_HASH=sha512
+# SECUREBOOT_SIGN_KEY=/var/lib/sbctl/keys/db/db.key
+# SECUREBOOT_SIGN_CERT=/var/lib/sbctl/keys/db/db.pem
 ```
 
 ## 5. other

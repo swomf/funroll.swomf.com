@@ -69,13 +69,16 @@ gui-libs/eglexternalplatform ~amd64
 ```
 
 After installing nvidia-drivers, if you have secure boot enabled
-[like I do ⟹](/conf/kernel), you'll need to sign your Nvidia kernel objects.
-For a manually compiled kernel, I do the following:
+[like I do ⟹](/conf/kernel), you may need to sign your Nvidia kernel objects.
+(I do not, since I build from gentoo-sources.)
+Either way, Gentoo can do this for you, see [make.conf ⟹](/conf/make.conf#secure-boot).
+
+Changing make.conf should be a wrapper around basically the following anyway:
 
 <pre><code><span class="magenta command"></span><span class="purple">./scripts/sign-file</span> sha512 \
   certs/signing_key.pem \
   certs/signing_key.x509 \
-  /lib/modules/6.12.31-gentoo/video/nvidia-uvm.ko
+  /lib/modules/<em class="yellow">$YOUR_GENTOO</em>/video/<em class="yellow">$kernel_objects.ko</em>
 <span class="grey"># with all of the .ko objects</span>.
 <span class="grey"># You may need to do </span><span class="purple">modprobe</span> nvidia <span class="grey">afterward.</span>
 </code></pre>

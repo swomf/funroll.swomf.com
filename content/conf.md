@@ -88,6 +88,7 @@ I love Gentoo!
   <tr>
     <td><a href="/conf/make.conf">make.conf ⇒</a></td>
     <td>I workaround a mold linker bug and set up compile-time niceness.
+      I also set up module signing for secure boot.
       Other than that, I set up march=native, LTO, global <em class="blue">USE</em>
       and MAKEOPTS obviously.
       <em class="red">Unfinished article.</em></td>
