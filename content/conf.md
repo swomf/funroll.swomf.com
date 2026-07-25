@@ -60,7 +60,7 @@ I love Gentoo!
   <tr>
     <td><a href="/conf/desktop">desktop ⇒</a></td>
     <td>I patch three changes into the <em>swappy</em>
-      screenshot editor.
+      screenshot editor and discuss packaging Aylur's GTK Shell.
       The rest is an exposition
       on my desktop setup, which is usually only
       interesting to the author.</td>
