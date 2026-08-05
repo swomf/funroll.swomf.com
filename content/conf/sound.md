@@ -33,7 +33,8 @@ Read about EasyEffects on the [ArchWiki ⇗](https://wiki.archlinux.org/title/Pi
 
 ```bash path=/etc/portage/package.use/sound
 # idk what these are, but there are so few so i add them all.
-media-sound/easyeffects calf mda-lv2 zamaudio
+# ...except doc cuz that brings in webkit-gtk (why?)
+media-sound/easyeffects calf mda-lv2 zamaudio -doc
 # pulled in as dep for above
 media-plugins/calf lv2
 ```
