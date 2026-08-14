@@ -59,11 +59,9 @@ I love Gentoo!
   </tr>
   <tr>
     <td><a href="/conf/desktop">desktop ⇒</a></td>
-    <td>I patch three changes into the <em>swappy</em>
-      screenshot editor and discuss packaging Aylur's GTK Shell.
-      The rest is an exposition
-      on my desktop setup, which is usually only
-      interesting to the author.</td>
+    <td>I patch Hyprland so that two mutually exclusive gesture
+      animations are mutually inclusive. Then I discuss packaging
+      Aylur's GTK Shell, and add some theming plumbing.</td>
   </tr>
   <tr>
     <td><a href="/conf/gaijin">gaijin ⇒</a></td>
@@ -124,6 +122,12 @@ I love Gentoo!
     <td><a href="/conf/reading">reading ⇒</a></td>
     <td>I briefly patch default dark mode into app-text/evince.
     I also set up distro-agnostic Zathura+LazyVim synctex.</td>
+  </tr>
+  <tr>
+    <td><a href="/conf/screenshot">screenshot ⇒</a></td>
+    <td>I patch three changes into the <em>swappy</em> screenshot
+      editor: better keybinds, a not-accepted crop-tool pr, and
+      basic rotation.</td>
   </tr>
   <tr>
     <td><a href="/conf/sound">sound ⇒</a></td>
