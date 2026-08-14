@@ -179,6 +179,10 @@ I hate Gentoo.
       <em class="blue">savedconfig</em> feature. <em class="red">Unmaintained.</em></td>
   </tr>
   <tr>
+    <td><a href="/conf/fonts">fonts ⇒</a></td>
+    <td>I fix some font bugs (characters rendering too small) and add Nerd Fonts - Source Code Pro.</td>
+  </tr>
+  <tr>
     <td><a href="/conf/games">games ⇒</a></td>
     <td>I plumb at nonsense with Wine. Then I enable kernel splitlock.
       Worth a look if you're having trouble, but rather boring. <em class="red">Unfinished article.</em></td>
@@ -202,11 +206,6 @@ I hate Gentoo.
   <tr>
     <td><a href="/conf/shell">shell ⇒</a></td>
     <td>I briefly set up the dash shell and plug my zsh theme.</td>
-  </tr>
-  <tr>
-    <td><a href="/conf/theme">theme ⇒</a></td>
-    <td>I add nerdfonts and kvantum qt5.
-      <em class="red">Unfinished article.</em></td>
   </tr>
   <tr>
     <td><a href="/conf/tor">tor ⇒</a></td>
