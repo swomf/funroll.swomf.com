@@ -180,10 +180,6 @@ I hate Gentoo.
       Worth a look if you're having trouble, but rather boring. <em class="red">Unfinished article.</em></td>
   </tr>
   <tr>
-    <td><a href="/conf/gestures">gestures ⇒</a></td>
-    <td>Empty :(</td>
-  </tr>
-  <tr>
     <td><a href="/conf/gnome-deps">gnome-deps ⇒</a></td>
     <td>Boring flag plumbing.</td>
   </tr>
