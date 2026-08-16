@@ -197,6 +197,10 @@ I hate Gentoo.
     <td>Boring flag plumbing.</td>
   </tr>
   <tr>
+    <td><a href="/conf/machine-learning">ml ⇒</a></td>
+    <td>Boring flag plumbing.</td>
+  </tr>
+  <tr>
     <td><a href="/conf/office">office ⇒</a></td>
     <td>Boring flag plumbing.</td>
   </tr>
