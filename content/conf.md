@@ -137,6 +137,11 @@ I love Gentoo!
       for use with easyeffects.</td>
   </tr>
   <tr>
+    <td><a href="/conf/terminal">terminal ⇒</a></td>
+    <td>I migrate from foot to kitty, patch out two annoyances, and
+      show why kitty isn't actually a RAM use obliterator.</td>
+  </tr>
+  <tr>
     <td><a href="/conf/video">video ⇒</a></td>
     <td><em class="red">Unfinished article.</em></td>
   </tr>
