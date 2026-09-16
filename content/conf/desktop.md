@@ -261,10 +261,10 @@ index 203fc329..8d826296 100644
 
 </details>
 
-I use unstable hyprland cuz I'd rather risk having new bugs than having old ones.
+I use the latest hyprland cuz I'd rather risk having new bugs than having old ones.
 
 ```bash path=/etc/portage/package.accept_keywords/hyprland
-gui-wm/hyprland ~amd64
+gui-wm/hyprland **
 dev-libs/wayland-protocols ~amd64
 # required by xdg-desktop-portal-hyprland
 dev-cpp/sdbus-c++ ~amd64
