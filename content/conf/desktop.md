@@ -26,10 +26,10 @@ workspace setup (a diy grid).
 
 ```bash path=/etc/portage/patches/gui-wm/hyprland/grid-swipe.patch
 diff --git a/src/config/lua/bindings/LuaBindingsConfigRules.cpp b/src/config/lua/bindings/LuaBindingsConfigRules.cpp
-index 8095b170..011c25fb 100644
+index cc6108ff..d99c44c6 100644
 --- a/src/config/lua/bindings/LuaBindingsConfigRules.cpp
 +++ b/src/config/lua/bindings/LuaBindingsConfigRules.cpp
-@@ -877,6 +877,20 @@ static int hlGesture(lua_State* L) {
+@@ -878,6 +878,20 @@ static int hlGesture(lua_State* L) {
  
  #undef GET_ACTION_STRING
  
@@ -47,10 +47,10 @@ index 8095b170..011c25fb 100644
 +    }
 +    lua_pop(L, 1);
 +
-     uint32_t modMask = 0;
+     Input::ModifierMask modMask = Input::HL_MODIFIER_NONE;
      lua_getfield(L, 1, "mods");
      if (!lua_isnil(L, -1)) {
-@@ -935,7 +949,7 @@ static int hlGesture(lua_State* L) {
+@@ -942,7 +956,7 @@ static int hlGesture(lua_State* L) {
          const auto& action = actionParser.parsed();
  
          if (action == "workspace")
@@ -60,7 +60,7 @@ index 8095b170..011c25fb 100644
              result = g_pTrackpadGestures->addGesture(makeUnique<CResizeTrackpadGesture>(), fingerCount, direction, modMask, deltaScale, disableInhibit);
          else if (action == "move")
 diff --git a/src/managers/input/UnifiedWorkspaceSwipeGesture.cpp b/src/managers/input/UnifiedWorkspaceSwipeGesture.cpp
-index f58c1869..681c522e 100644
+index 2f407790..60d05e93 100644
 --- a/src/managers/input/UnifiedWorkspaceSwipeGesture.cpp
 +++ b/src/managers/input/UnifiedWorkspaceSwipeGesture.cpp
 @@ -1,5 +1,7 @@
@@ -70,8 +70,8 @@ index f58c1869..681c522e 100644
 +
  #include "../../Compositor.hpp"
  #include "../../state/WorkspaceState.hpp"
- #include "../../desktop/state/FocusState.hpp"
-@@ -13,7 +15,7 @@ bool CUnifiedWorkspaceSwipeGesture::isGestureInProgress() {
+ #include "../../state/workspace/Resolver.hpp"
+@@ -22,7 +24,7 @@ bool CUnifiedWorkspaceSwipeGesture::isGestureInProgress() {
      return !!m_workspaceBegin;
  }
  
@@ -80,16 +80,16 @@ index f58c1869..681c522e 100644
      if (isGestureInProgress())
          return;
  
-@@ -21,6 +23,8 @@ void CUnifiedWorkspaceSwipeGesture::begin() {
+@@ -34,6 +36,8 @@ void CUnifiedWorkspaceSwipeGesture::begin() {
  
-     Log::logger->log(Log::DEBUG, "CUnifiedWorkspaceSwipeGesture::begin: Starting a swipe from {}", PWORKSPACE->m_name);
+     LOG(Log::DEBUG, "CUnifiedWorkspaceSwipeGesture::begin: Starting a swipe from {}", PWORKSPACE->displayName());
  
 +    m_step           = std::max(1, step);
 +    m_vertical       = vertical;
      m_workspaceBegin = PWORKSPACE;
      m_delta          = 0;
-     m_monitor        = Desktop::focusState()->monitor();
-@@ -53,15 +57,19 @@ void CUnifiedWorkspaceSwipeGesture::update(double delta) {
+     m_monitor        = MONITOR;
+@@ -66,15 +70,15 @@ void CUnifiedWorkspaceSwipeGesture::update(double delta) {
      const auto   XDISTANCE     = m_monitor->m_size.x + *PWORKSPACEGAP;
      const auto   YDISTANCE     = m_monitor->m_size.y + *PWORKSPACEGAP;
      const auto   ANIMSTYLE     = m_workspaceBegin->m_renderOffset->getStyle();
@@ -101,29 +101,32 @@ index f58c1869..681c522e 100644
      m_avgSpeed = (m_avgSpeed * m_speedPoints + abs(d)) / (m_speedPoints + 1);
      m_speedPoints++;
  
--    auto workspaceIDLeft  = getWorkspaceIDNameFromString((*PSWIPEUSER ? "r-1" : "m-1")).id;
--    auto workspaceIDRight = getWorkspaceIDNameFromString((*PSWIPEUSER ? "r+1" : "m+1")).id;
-+    // For grid jumps (m_step > 1) we address workspaces by numeric id (r+-step); otherwise keep the classic
-+    // monitor-relative adjacent behavior (m±1) unless workspace_swipe_use_r is set.
-+    const bool USEREAL              = *PSWIPEUSER || m_step != 1;
-+    auto       workspaceIDLeft      = getWorkspaceIDNameFromString(std::format("{}-{}", USEREAL ? "r" : "m", m_step)).id;
-+    auto       workspaceIDRight     = getWorkspaceIDNameFromString(std::format("{}+{}", USEREAL ? "r" : "m", m_step)).id;
-+    const bool OVERSHOOTSLOWERBOUND = m_step > 1 && m_workspaceBegin->m_id > 0 && m_step >= m_workspaceBegin->m_id;
+-    auto workspaceLeft  = State::Workspace::resolver()->getWorkspaceTargetFromString((*PSWIPEUSER ? "r-1" : "m-1"));
+-    auto workspaceRight = State::Workspace::resolver()->getWorkspaceTargetFromString((*PSWIPEUSER ? "r+1" : "m+1"));
++    auto workspaceLeft  = State::Workspace::resolver()->getWorkspaceTargetFromString(std::format("{}-{}", *PSWIPEUSER || m_step != 1 ? "r" : "m", m_step));
++    auto workspaceRight = State::Workspace::resolver()->getWorkspaceTargetFromString(std::format("{}+{}", *PSWIPEUSER || m_step != 1 ? "r" : "m", m_step));
  
-     if ((workspaceIDLeft == WORKSPACE_INVALID || workspaceIDRight == WORKSPACE_INVALID || workspaceIDLeft == m_workspaceBegin->m_id) && !*PSWIPENEW) {
+     if (!workspaceLeft.valid() || !workspaceRight.valid() || (sameWorkspaceIdentity(workspaceLeft, m_workspaceBegin) && !*PSWIPENEW)) {
          m_workspaceBegin = nullptr; // invalidate the swipe
-@@ -73,7 +81,9 @@ void CUnifiedWorkspaceSwipeGesture::update(double delta) {
-     m_delta = std::clamp(m_delta, sc<double>(-SWIPEDISTANCE), sc<double>(SWIPEDISTANCE));
- 
-     if ((m_workspaceBegin->m_id == workspaceIDLeft && *PSWIPENEW && (m_delta < 0)) ||
--        (m_delta > 0 && m_workspaceBegin->getWindowCount() == 0 && workspaceIDRight <= m_workspaceBegin->m_id) || (m_delta < 0 && m_workspaceBegin->m_id <= workspaceIDLeft)) {
-+        (m_delta > 0 && m_workspaceBegin->getWindowCount() == 0 && workspaceIDRight <= m_workspaceBegin->m_id) || (m_delta < 0 && m_workspaceBegin->m_id <= workspaceIDLeft) ||
-+        // r-N resolves an overshoot to workspace 1, so compare the requested step with the starting ID instead.
-+        (m_delta < 0 && OVERSHOOTSLOWERBOUND)) {
+@@ -90,7 +94,7 @@ void CUnifiedWorkspaceSwipeGesture::update(double delta) {
+     const auto RIGHT_ID = std::get_if<Workspace::SWorkspaceNumberedID>(&*workspaceRight.id);
+     if ((sameWorkspaceIdentity(workspaceLeft, m_workspaceBegin) && *PSWIPENEW && (m_delta < 0)) ||
+         (m_delta > 0 && m_workspaceBegin->getWindowCount() == 0 && BEGIN_ID && RIGHT_ID && RIGHT_ID->value <= *BEGIN_ID) ||
+-        (m_delta < 0 && BEGIN_ID && LEFT_ID && *BEGIN_ID <= LEFT_ID->value)) {
++        (m_delta < 0 && BEGIN_ID && LEFT_ID && *BEGIN_ID <= LEFT_ID->value) || (m_delta < 0 && m_step > 1 && BEGIN_ID && m_step >= *BEGIN_ID)) {
  
          m_delta = 0;
          g_pHyprRenderer->damageMonitor(m_monitor.lock());
-@@ -193,17 +203,19 @@ void CUnifiedWorkspaceSwipeGesture::end() {
+@@ -194,7 +198,7 @@ void CUnifiedWorkspaceSwipeGesture::update(double delta) {
+     if (*PSWIPEFOREVER) {
+         if (abs(m_delta) >= SWIPEDISTANCE) {
+             end();
+-            begin();
++            begin(m_step, m_vertical);
+         }
+     }
+ }
+@@ -210,11 +214,11 @@ void CUnifiedWorkspaceSwipeGesture::end() {
      static auto PSWIPEUSER    = CConfigValue<Config::INTEGER>("gestures:workspace_swipe_use_r");
      static auto PWORKSPACEGAP = CConfigValue<Config::INTEGER>("general:gaps_workspaces");
      const auto  ANIMSTYLE     = m_workspaceBegin->m_renderOffset->getStyle();
@@ -131,31 +134,30 @@ index f58c1869..681c522e 100644
 +    const bool  VERTANIMS     = m_vertical.value_or(ANIMSTYLE == "slidevert" || ANIMSTYLE.starts_with("slidefadevert"));
  
      // commit
--    auto       workspaceIDLeft  = getWorkspaceIDNameFromString((*PSWIPEUSER ? "r-1" : "m-1")).id;
--    auto       workspaceIDRight = getWorkspaceIDNameFromString((*PSWIPEUSER ? "r+1" : "m+1")).id;
--    const auto SWIPEDISTANCE    = std::clamp(*PSWIPEDIST, sc<int64_t>(1LL), sc<int64_t>(UINT32_MAX));
-+    const bool USEREAL              = *PSWIPEUSER || m_step != 1;
-+    auto       workspaceIDLeft      = getWorkspaceIDNameFromString(std::format("{}-{}", USEREAL ? "r" : "m", m_step)).id;
-+    auto       workspaceIDRight     = getWorkspaceIDNameFromString(std::format("{}+{}", USEREAL ? "r" : "m", m_step)).id;
-+    const auto SWIPEDISTANCE        = std::clamp(*PSWIPEDIST, sc<int64_t>(1LL), sc<int64_t>(UINT32_MAX));
-+    const bool OVERSHOOTSLOWERBOUND = m_step > 1 && m_workspaceBegin->m_id > 0 && m_step >= m_workspaceBegin->m_id;
+-    auto       workspaceLeft  = State::Workspace::resolver()->getWorkspaceTargetFromString((*PSWIPEUSER ? "r-1" : "m-1"));
+-    auto       workspaceRight = State::Workspace::resolver()->getWorkspaceTargetFromString((*PSWIPEUSER ? "r+1" : "m+1"));
++    auto       workspaceLeft  = State::Workspace::resolver()->getWorkspaceTargetFromString(std::format("{}-{}", *PSWIPEUSER || m_step != 1 ? "r" : "m", m_step));
++    auto       workspaceRight = State::Workspace::resolver()->getWorkspaceTargetFromString(std::format("{}+{}", *PSWIPEUSER || m_step != 1 ? "r" : "m", m_step));
+     const auto SWIPEDISTANCE  = std::clamp(*PSWIPEDIST, sc<int64_t>(1LL), sc<int64_t>(UINT32_MAX));
  
      // If we've been swiping off the right end with PSWIPENEW enabled, there is
-     // no workspace there yet, and we need to choose an ID for a new one now.
-     if (workspaceIDRight <= m_workspaceBegin->m_id && *PSWIPENEW)
--        workspaceIDRight = getWorkspaceIDNameFromString("r+1").id;
-+        workspaceIDRight = getWorkspaceIDNameFromString(std::format("r+{}", m_step)).id;
+@@ -222,7 +226,7 @@ void CUnifiedWorkspaceSwipeGesture::end() {
+     const auto BEGIN_ID = m_workspaceBegin->numberedID();
+     const auto RIGHT_ID = workspaceRight.id ? std::get_if<Workspace::SWorkspaceNumberedID>(&*workspaceRight.id) : nullptr;
+     if (BEGIN_ID && RIGHT_ID && RIGHT_ID->value <= *BEGIN_ID && *PSWIPENEW)
+-        workspaceRight = State::Workspace::resolver()->getWorkspaceTargetFromString("r+1");
++        workspaceRight = State::Workspace::resolver()->getWorkspaceTargetFromString(std::format("r+{}", m_step));
  
-     auto         PWORKSPACER = State::workspaceState()->query().id(workspaceIDRight).run(); // not guaranteed if PSWIPENEW || PSWIPENUMBER
-     auto         PWORKSPACEL = State::workspaceState()->query().id(workspaceIDLeft).run();  // not guaranteed if PSWIPENUMBER
-@@ -214,7 +226,9 @@ void CUnifiedWorkspaceSwipeGesture::end() {
+     if (!workspaceLeft.valid() || !workspaceRight.valid()) {
+         m_workspaceBegin->m_renderOffset->setValueAndWarp({});
+@@ -241,7 +245,9 @@ void CUnifiedWorkspaceSwipeGesture::end() {
  
      PHLWORKSPACE pSwitchedTo = nullptr;
  
 -    if ((abs(m_delta) < SWIPEDISTANCE * *PSWIPEPERC && (*PSWIPEFORC == 0 || (*PSWIPEFORC != 0 && m_avgSpeed < *PSWIPEFORC))) || abs(m_delta) < 2) {
-+    // r-N resolves an overshoot to workspace 1, so force a revert based on the requested step instead.
-+    if ((m_delta < 0 && OVERSHOOTSLOWERBOUND) || (abs(m_delta) < SWIPEDISTANCE * *PSWIPEPERC && (*PSWIPEFORC == 0 || (*PSWIPEFORC != 0 && m_avgSpeed < *PSWIPEFORC))) ||
-+        abs(m_delta) < 2) {
++    // Reject grid jumps below workspace 1 instead of accepting the resolver's clamped target.
++    if ((m_delta < 0 && m_step > 1 && BEGIN_ID && m_step >= *BEGIN_ID) ||
++        (abs(m_delta) < SWIPEDISTANCE * *PSWIPEPERC && (*PSWIPEFORC == 0 || (*PSWIPEFORC != 0 && m_avgSpeed < *PSWIPEFORC))) || abs(m_delta) < 2) {
          // revert
          if (abs(m_delta) < 2) {
              if (PWORKSPACEL)
@@ -207,7 +209,7 @@ index 4dbb6c5d..73609572 100644
      friend class CWorkspaceSwipeGesture;
      friend class CInputManager;
 diff --git a/src/managers/input/trackpad/gestures/WorkspaceSwipeGesture.cpp b/src/managers/input/trackpad/gestures/WorkspaceSwipeGesture.cpp
-index f807e773..fc50a11f 100644
+index ead116a7..23bcd1f3 100644
 --- a/src/managers/input/trackpad/gestures/WorkspaceSwipeGesture.cpp
 +++ b/src/managers/input/trackpad/gestures/WorkspaceSwipeGesture.cpp
 @@ -1,5 +1,7 @@
@@ -218,7 +220,18 @@ index f807e773..fc50a11f 100644
  #include "../../../../Compositor.hpp"
  #include "../../../../state/WorkspaceState.hpp"
  #include "../../../../desktop/state/FocusState.hpp"
-@@ -24,7 +26,15 @@ void CWorkspaceSwipeGesture::begin(const ITrackpadGesture::STrackpadGestureBegin
+@@ -7,6 +9,10 @@
+ 
+ #include "../../UnifiedWorkspaceSwipeGesture.hpp"
+ 
++CWorkspaceSwipeGesture::CWorkspaceSwipeGesture(int step) : m_step(step) {
++    ;
++}
++
+ void CWorkspaceSwipeGesture::begin(const ITrackpadGesture::STrackpadGestureBegin& e) {
+     ITrackpadGesture::begin(e);
+ 
+@@ -24,7 +30,15 @@ void CWorkspaceSwipeGesture::begin(const ITrackpadGesture::STrackpadGestureBegin
      if (onMonitor < 2 && !*PSWIPENEW)
          return; // disallow swiping when there's 1 workspace on a monitor
  
@@ -236,7 +249,7 @@ index f807e773..fc50a11f 100644
  
  void CWorkspaceSwipeGesture::update(const ITrackpadGesture::STrackpadGestureUpdate& e) {
 diff --git a/src/managers/input/trackpad/gestures/WorkspaceSwipeGesture.hpp b/src/managers/input/trackpad/gestures/WorkspaceSwipeGesture.hpp
-index 203fc329..8d826296 100644
+index 203fc329..8561367b 100644
 --- a/src/managers/input/trackpad/gestures/WorkspaceSwipeGesture.hpp
 +++ b/src/managers/input/trackpad/gestures/WorkspaceSwipeGesture.hpp
 @@ -5,7 +5,8 @@
@@ -245,7 +258,7 @@ index 203fc329..8d826296 100644
    public:
 -    CWorkspaceSwipeGesture()          = default;
 +    // step: how many workspace IDs a full swipe jumps. 1 = classic adjacent swipe, >1 = grid row/column jump.
-+    CWorkspaceSwipeGesture(int step = 1) : m_step(step) {}
++    CWorkspaceSwipeGesture(int step = 1);
      virtual ~CWorkspaceSwipeGesture() = default;
  
      virtual void begin(const ITrackpadGesture::STrackpadGestureBegin& e);
