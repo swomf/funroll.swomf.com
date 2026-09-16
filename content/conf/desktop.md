@@ -274,7 +274,31 @@ index 203fc329..8561367b 100644
 
 </details>
 
-I use the latest hyprland cuz I'd rather risk having new bugs than having old ones.
+I use the latest hyprland git cuz I'd rather risk having new bugs than having old ones.
+So I added this patch (stuff broke when i updated to 92b82c0c1e4168d93903ec42a2276843bbd84821).
+
+```bash path=/etc/portage/patches/gui-wm/hyprland/gcc15-string-subview.patch
+diff --git a/src/ipc/s1/S1.cpp b/src/ipc/s1/S1.cpp
+--- a/src/ipc/s1/S1.cpp
++++ b/src/ipc/s1/S1.cpp
+@@ -8,6 +8,7 @@
+ #include <optional>
+ #include <ranges>
+ #include <sstream>
++#include <string_view>
+ #include <hyprutils/string/String.hpp>
+ 
+ using namespace IPC::Socket1;
+@@ -145,7 +146,7 @@
+             if (i < request.size() && (request[i + 1] == '\\' || request[i + 1] == ';'))
+                 ++i;
+             else
+-                LOG(Log::ERR, "Malformed socket1 request: invalid escape sequence {} at position {}, using it verbatim", request.subview(i, 2), i);
++                LOG(Log::ERR, "Malformed socket1 request: invalid escape sequence {} at position {}, using it verbatim", std::string_view{request}.substr(i, 2), i);
+         }
+         parsedCommand << request[i];
+     }
+```
 
 ```bash path=/etc/portage/package.accept_keywords/hyprland
 gui-wm/hyprland **
